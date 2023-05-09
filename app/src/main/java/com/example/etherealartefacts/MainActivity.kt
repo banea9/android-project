@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -47,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import com.example.etherealartefacts.ui.theme.EtherealArtefactsTheme
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 
 class MainActivity : ComponentActivity() {
@@ -54,13 +56,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EtherealArtefactsTheme {
-//                val navController = rememberNavController()
+                val navController = rememberNavController()
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    Scaffold {
+                        NavHost(
+                            navController = navController,
+                            startDestination = "login",
+                            modifier = Modifier.padding(it)
+                        ) {
+                            composable(route = "login") {
+                                LoginScreen(navigateToDetailsScreen = {
+                                    navController.navigate(
+                                        "detailsScreen"
+                                    )
+                                })
+                            }
+                            composable(route = "detailsScreen") {
+                                ProductsScreen()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -68,8 +88,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen() {
-    val keyboardController = LocalSoftwareKeyboardController.current;
+fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val logo = painterResource(id = R.drawable.logo)
     val userEmail = "test@gmail.com"
     val userPassword = "Start123!"
@@ -96,7 +116,7 @@ fun LoginScreen() {
                 .aspectRatio(1f)
         )
 
-        Column() {
+        Column {
             Text(
                 text = "Log in",
                 fontSize = 26.sp,
@@ -127,7 +147,7 @@ fun LoginScreen() {
                     PasswordVisualTransformation()
                 },
                 trailingIcon = {
-                    //I couldnt find visible and visibleOff icons...
+                    //I couldn't find visible and visibleOff icons...
                     if (isPasswordVisible) {
                         IconButton(onClick = { isPasswordVisible = false }) {
                             Icon(imageVector = Icons.Filled.Star, contentDescription = "Hide")
@@ -145,7 +165,9 @@ fun LoginScreen() {
                         if (password == userPassword) {
                             password = ""
                             err = ""
+                            navigateToDetailsScreen()
                         } else {
+                            password = ""
                             err = "Invalid credentials"
                         }
                     } else {
@@ -193,7 +215,7 @@ fun ProductsScreen() {
                 Text(
                     text = "Very cool tool for photography",
                 )
-                Row() {
+                Row {
                     Text(text = "4")
                     Icon(Icons.Default.Star, contentDescription = null)
                     Icon(Icons.Default.Star, contentDescription = null)
