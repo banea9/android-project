@@ -98,7 +98,6 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                     PasswordVisualTransformation()
                 },
                 trailingIcon = {
-                    //I couldn't find visible and visibleOff icons...
                     if (isPasswordVisible) {
                         IconButton(onClick = { isPasswordVisible = false }) {
                             Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = null)
