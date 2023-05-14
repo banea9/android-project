@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -37,9 +38,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.etherealartefacts.models.LoginRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
+    var loginViewModel: LoginViewModel = hiltViewModel()
     val keyboardController = LocalSoftwareKeyboardController.current
     val logo = painterResource(id = R.drawable.logo)
     val userEmail = "test@gmail.com"
@@ -52,6 +58,8 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     var err by remember { mutableStateOf("") }
+
+    var corountineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -110,6 +118,11 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                 })
             Button(
                 onClick = {
+
+                    val body = LoginRequest(email, password)
+                    corountineScope.launch(Dispatchers.IO) {
+                        loginViewModel.login(body)
+                    }
                     if (email == userEmail) {
                         isEmailValid = true
                         if (password == userPassword) {
