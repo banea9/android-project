@@ -29,7 +29,7 @@ class APIClient {
 
         val client = Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://ethereal-artefacts.fly.dev/api")
+            .baseUrl("https://ethereal-artefacts.fly.dev/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

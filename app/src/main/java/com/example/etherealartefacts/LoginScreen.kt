@@ -2,6 +2,8 @@
 
 package com.example.etherealartefacts
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,13 +53,12 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     val logo = painterResource(id = R.drawable.logo)
     val userEmail = "test@gmail.com"
     val userPassword = "Start123!"
-
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
 
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-
+    var context = LocalContext.current
     var err by remember { mutableStateOf("") }
 
     var corountineScope = rememberCoroutineScope()
@@ -121,7 +123,8 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
 
                     val body = LoginRequest(email, password)
                     corountineScope.launch(Dispatchers.IO) {
-                        loginViewModel.login(body)
+                        val result = loginViewModel.login(body)
+                        println("result");
                     }
                     if (email == userEmail) {
                         isEmailValid = true
@@ -137,6 +140,9 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                         isEmailValid = false
                         err = "Invalid credentials"
                     }
+                    if(err.isNotEmpty()) {
+                        showToastNotification(context, err)
+                    }
                     keyboardController?.hide()
                 },
             ) {
@@ -144,10 +150,10 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                     text = "Log in",
                 )
             }
-            Text(
-                text = err,
-                color = Color.Red,
-            )
         }
     }
+}
+
+fun showToastNotification(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }

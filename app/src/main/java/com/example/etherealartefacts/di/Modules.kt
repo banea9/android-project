@@ -11,17 +11,13 @@ import javax.inject.Singleton
 
 @Module()
 @InstallIn(SingletonComponent::class)
-class NetworkingModules {
+object NetworkingModules {
     @Provides
     @Singleton
     fun providesAPI(): API {
         return APIClient().defaultService
     }
-}
 
-@Module()
-@InstallIn(SingletonComponent::class)
-class RepositoryModules {
     @Provides
     @Singleton
     fun providesRepository(apiService: API) = DefaultRepository(apiService)

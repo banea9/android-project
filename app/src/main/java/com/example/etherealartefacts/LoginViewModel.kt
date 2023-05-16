@@ -10,7 +10,6 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val repository: DefaultRepository
 ) : ViewModel() {
-
     suspend fun login(request: LoginRequest): LoginResponse {
         return repository.login(request)
     }
