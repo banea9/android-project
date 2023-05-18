@@ -23,10 +23,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -43,25 +43,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.models.LoginRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
-    var loginViewModel: LoginViewModel = hiltViewModel()
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val logo = painterResource(id = R.drawable.logo)
-    val userEmail = "test@gmail.com"
-    val userPassword = "Start123!"
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
-
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var context = LocalContext.current
-    var err by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val logo = painterResource(id = R.drawable.logo)
 
-    var corountineScope = rememberCoroutineScope()
+    var loginViewModel: LoginViewModel = hiltViewModel()
+    val response by loginViewModel.response.collectAsState()
+    val isLoading by loginViewModel.isLoading.collectAsState()
+    var context = LocalContext.current
+
+    response?.let { result ->
+        result.onSuccess { _ ->
+            navigateToDetailsScreen()
+        }
+        result.onFailure { _ ->
+            isEmailValid = false
+            showToastNotification(context, "Invalid Credentials")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -120,31 +125,11 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                 })
             Button(
                 onClick = {
-
                     val body = LoginRequest(email, password)
-                    corountineScope.launch(Dispatchers.IO) {
-                        val result = loginViewModel.login(body)
-                        println("result");
-                    }
-                    if (email == userEmail) {
-                        isEmailValid = true
-                        if (password == userPassword) {
-                            password = ""
-                            err = ""
-                            navigateToDetailsScreen()
-                        } else {
-                            password = ""
-                            err = "Invalid credentials"
-                        }
-                    } else {
-                        isEmailValid = false
-                        err = "Invalid credentials"
-                    }
-                    if(err.isNotEmpty()) {
-                        showToastNotification(context, err)
-                    }
+                    loginViewModel.login(body)
                     keyboardController?.hide()
                 },
+                enabled = !isLoading
             ) {
                 Text(
                     text = "Log in",
