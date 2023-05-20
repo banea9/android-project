@@ -23,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.models.LoginRequest
+import com.example.etherealartefacts.models.LoginResponse
+
 
 @Composable
 fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
@@ -52,17 +55,19 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val logo = painterResource(id = R.drawable.logo)
-
-    var loginViewModel: LoginViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
     val response by loginViewModel.response.collectAsState()
     val isLoading by loginViewModel.isLoading.collectAsState()
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     response?.let { result ->
-        result.onSuccess { _ ->
-            navigateToDetailsScreen()
+        result.onSuccess { response: LoginResponse ->
+            println("test: ${response.jwt}")
+            LaunchedEffect(Unit) {
+                navigateToDetailsScreen()
+            }
         }
-        result.onFailure { _ ->
+        result.onFailure {
             isEmailValid = false
             showToastNotification(context, "Invalid Credentials")
         }
@@ -115,7 +120,10 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                 trailingIcon = {
                     if (isPasswordVisible) {
                         IconButton(onClick = { isPasswordVisible = false }) {
-                            Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
                         }
                     } else {
                         IconButton(onClick = { isPasswordVisible = true }) {
