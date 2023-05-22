@@ -45,10 +45,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.models.LoginRequest
 import com.example.etherealartefacts.models.LoginResponse
+import com.example.etherealartefacts.networking.JWTTokenProvider
 
 
 @Composable
-fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
+fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
@@ -63,6 +64,7 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     response?.let { result ->
         result.onSuccess { response: LoginResponse ->
             println("test: ${response.jwt}")
+            jwtTokenProvider.setJwtToken(response.jwt)
             LaunchedEffect(Unit) {
                 navigateToDetailsScreen()
             }

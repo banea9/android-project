@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class APIClient {
+class APIClient(private val jwtInterceptor: JWTInterceptor) {
     private val DEFAULT_TIMEOUT = 1L
 
 
@@ -17,7 +17,6 @@ class APIClient {
     }
 
     private fun createService(): API {
-        val jwtInterceptor = JWTInterceptor(jwtTokenProvider = JWTTokenProvider())
         val okHttpClient: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)

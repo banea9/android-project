@@ -13,8 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
-    private val repository: DefaultRepository
-) : ViewModel() {
+    private val repository: DefaultRepository,
+
+    ) : ViewModel() {
 
     private val _response = MutableStateFlow<Result<ProductDetailsModel>?>(null)
     val response : StateFlow<Result<ProductDetailsModel>?> = _response

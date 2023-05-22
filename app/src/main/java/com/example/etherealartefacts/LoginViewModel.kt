@@ -13,11 +13,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: DefaultRepository
+    private val repository: DefaultRepository,
 ) : ViewModel() {
 
     private val _response = MutableStateFlow<Result<LoginResponse>?>(null)
-    val response : StateFlow<Result<LoginResponse>?> = _response
+    val response: StateFlow<Result<LoginResponse>?> = _response
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
             try {
                 _isLoading.value = true
                 val loginResponse = repository.login(request)
-                    _response.value = Result.success(loginResponse)
+                _response.value = Result.success(loginResponse)
             } catch (e: Exception) {
                 _response.value = Result.failure(e)
             } finally {
