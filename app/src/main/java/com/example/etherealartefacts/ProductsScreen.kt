@@ -45,7 +45,6 @@ fun ProductsScreen() {
     }
     response?.let { result ->
         result.onSuccess { product : ProductDetailsModel ->
-            println("result $product")
             Column {
                 Row {
                     Image(
