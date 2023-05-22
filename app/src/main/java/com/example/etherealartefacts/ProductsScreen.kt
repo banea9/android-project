@@ -1,6 +1,7 @@
 package com.example.etherealartefacts
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -10,70 +11,81 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarRate
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import com.example.etherealartefacts.models.ProductDetailsModel
+import com.example.etherealartefacts.utils.showErrorNotification
 
 @Composable
 fun ProductsScreen() {
-    var productsViewModel: ProductDetailsViewModel = hiltViewModel()
+    val productsViewModel: ProductDetailsViewModel = hiltViewModel()
     val response by productsViewModel.response.collectAsState()
-    val img = painterResource(R.drawable.img)
+    val isLoading by productsViewModel.isLoading.collectAsState()
+    val context = LocalContext.current
 
-    response?.let { result ->
-        result.onSuccess { _ ->
-            println("result success")
-        }
-        result.onFailure { _ ->
-            println("result failure")
+    LaunchedEffect(Unit) {
+        productsViewModel.getProductDetails(10)
+    }
+    if (isLoading) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator()
         }
     }
-    Column {
-        Row {
-            Image(
-                painter = img,
-                contentDescription = "Product Image",
-                modifier = Modifier
-                    .width(150.dp)
-                    .aspectRatio(1f)
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp)
-            ) {
-                Text(text = "Category: Photography")
-                Text(
-                    text = "Nikon 1234",
-                    fontWeight = FontWeight.W700
-                )
-                Text(
-                    text = "Very cool tool for photography",
-                )
+    response?.let { result ->
+        result.onSuccess { product : ProductDetailsModel ->
+            println("result $product")
+            Column {
                 Row {
-                    Text(text = "4")
-                    repeat(4) {
-                        Icon(Icons.Default.Star, contentDescription = null)
+                    Image(
+                        painter = rememberAsyncImagePainter(product.image),
+                        contentDescription = "Product Image",
+                        modifier = Modifier
+                            .width(150.dp)
+                            .aspectRatio(1f)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(10.dp)
+                    ) {
+                        Text(text = "Category: ${product.category}")
+                        Text(
+                            text = product.title,
+                                    fontWeight = FontWeight.W700
+                        )
+                        Text(
+                            text = product.short_description,
+                        )
+                        Row {
+                            Text(text = "${product.rating}")
+                            repeat(product.rating) {
+                                Icon(Icons.Default.Star, contentDescription = null)
+                            }
+                            repeat(5 - product.rating) {
+                                Icon(Icons.Outlined.StarRate, contentDescription = null)
+                            }
+
+                        }
+                        Text(text = "${product.price}.00 $")
                     }
-                    Icon(Icons.Outlined.StarRate, contentDescription = null)
                 }
-                Text(text = "$90.00")
             }
         }
-    }
-    Column {
-        Button(onClick = {
-            productsViewModel.getProductDetails(1)
-        }) {
-            Text(text = "Get Product")
+        result.onFailure {
+            showErrorNotification(context, "Error while fetching data")
         }
     }
 }
+

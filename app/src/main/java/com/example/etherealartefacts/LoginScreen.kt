@@ -2,8 +2,6 @@
 
 package com.example.etherealartefacts
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -46,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.models.LoginRequest
 import com.example.etherealartefacts.models.LoginResponse
 import com.example.etherealartefacts.networking.JWTTokenProvider
+import com.example.etherealartefacts.utils.showErrorNotification
 
 
 @Composable
@@ -63,7 +62,6 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
 
     response?.let { result ->
         result.onSuccess { response: LoginResponse ->
-            println("test: ${response.jwt}")
             jwtTokenProvider.setJwtToken(response.jwt)
             LaunchedEffect(Unit) {
                 navigateToDetailsScreen()
@@ -71,7 +69,7 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
         }
         result.onFailure {
             isEmailValid = false
-            showToastNotification(context, "Invalid Credentials")
+            showErrorNotification(context, "Invalid Credentials")
         }
     }
 
@@ -147,8 +145,4 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
             }
         }
     }
-}
-
-fun showToastNotification(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
