@@ -1,4 +1,4 @@
-package com.example.etherealartefacts
+package com.example.etherealartefacts.ui.productsDetails
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
