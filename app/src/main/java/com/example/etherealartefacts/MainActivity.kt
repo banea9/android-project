@@ -16,9 +16,13 @@ import com.example.etherealartefacts.ui.theme.EtherealArtefactsTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.etherealartefacts.networking.JWTTokenProvider
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var jwtTokenProvider: JWTTokenProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(it)
                         ) {
                             composable(route = "login") {
-                                LoginScreen(navigateToDetailsScreen = {
+                                LoginScreen(jwtTokenProvider, navigateToDetailsScreen = {
                                     navController.navigate(
                                         "detailsScreen"
                                     )

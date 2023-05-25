@@ -21,6 +21,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,21 +40,38 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.etherealartefacts.models.LoginRequest
+import com.example.etherealartefacts.models.LoginResponse
+import com.example.etherealartefacts.networking.JWTTokenProvider
+import com.example.etherealartefacts.utils.showErrorNotification
+
 
 @Composable
-fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val logo = painterResource(id = R.drawable.logo)
-    val userEmail = "test@gmail.com"
-    val userPassword = "Start123!"
-
+fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
-
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val logo = painterResource(id = R.drawable.logo)
+    val loginViewModel: LoginViewModel = hiltViewModel()
+    val response by loginViewModel.response.collectAsState()
+    val isLoading by loginViewModel.isLoading.collectAsState()
+    val context = LocalContext.current
 
-    var err by remember { mutableStateOf("") }
+    LaunchedEffect(response) {
+        response?.let { result ->
+            result.onSuccess { response: LoginResponse ->
+                jwtTokenProvider.setJwtToken(response.jwt)
+                navigateToDetailsScreen()
+            }
+            result.onFailure {
+                isEmailValid = false
+                showErrorNotification(context, "Invalid Credentials")
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -100,7 +120,10 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                 trailingIcon = {
                     if (isPasswordVisible) {
                         IconButton(onClick = { isPasswordVisible = false }) {
-                            Icon(imageVector = Icons.Default.VisibilityOff, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
                         }
                     } else {
                         IconButton(onClick = { isPasswordVisible = true }) {
@@ -110,31 +133,16 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
                 })
             Button(
                 onClick = {
-                    if (email == userEmail) {
-                        isEmailValid = true
-                        if (password == userPassword) {
-                            password = ""
-                            err = ""
-                            navigateToDetailsScreen()
-                        } else {
-                            password = ""
-                            err = "Invalid credentials"
-                        }
-                    } else {
-                        isEmailValid = false
-                        err = "Invalid credentials"
-                    }
+                    val body = LoginRequest(email, password)
+                    loginViewModel.login(body)
                     keyboardController?.hide()
                 },
+                enabled = !isLoading
             ) {
                 Text(
                     text = "Log in",
                 )
             }
-            Text(
-                text = err,
-                color = Color.Red,
-            )
         }
     }
 }
