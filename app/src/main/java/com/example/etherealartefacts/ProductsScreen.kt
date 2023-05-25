@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,55 +37,64 @@ fun ProductsScreen() {
     val isLoading by productsViewModel.isLoading.collectAsState()
     val context = LocalContext.current
 
+    val productState = remember { mutableStateOf<ProductDetailsModel?>(null) }
+
     LaunchedEffect(Unit) {
-        productsViewModel.getProductDetails(10)
+        productsViewModel.getProductDetails(8)
     }
+
+    LaunchedEffect(response) {
+        response?.let { result ->
+            result.onSuccess { product: ProductDetailsModel ->
+                productState.value = product
+            }
+            result.onFailure {
+                showErrorNotification(context, "Error while fetching data")
+            }
+        }
+    }
+
     if (isLoading) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator()
         }
     }
-    response?.let { result ->
-        result.onSuccess { product : ProductDetailsModel ->
-            Column {
-                Row {
-                    Image(
-                        painter = rememberAsyncImagePainter(product.image),
-                        contentDescription = "Product Image",
-                        modifier = Modifier
-                            .width(150.dp)
-                            .aspectRatio(1f)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp)
-                    ) {
-                        Text(text = "Category: ${product.category}")
-                        Text(
-                            text = product.title,
-                                    fontWeight = FontWeight.W700
-                        )
-                        Text(
-                            text = product.short_description,
-                        )
-                        Row {
-                            Text(text = "${product.rating}")
-                            repeat(product.rating) {
-                                Icon(Icons.Default.Star, contentDescription = null)
-                            }
-                            repeat(5 - product.rating) {
-                                Icon(Icons.Outlined.StarRate, contentDescription = null)
-                            }
 
+    productState.value?.let { product ->
+        Column {
+            Row {
+                Image(
+                    painter = rememberAsyncImagePainter(product.image),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .width(150.dp)
+                        .aspectRatio(1f)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp)
+                ) {
+                    Text(text = "Category: ${product.category}")
+                    Text(
+                        text = product.title,
+                        fontWeight = FontWeight.W700
+                    )
+                    Text(
+                        text = product.short_description,
+                    )
+                    Row {
+                        Text(text = "${product.rating}")
+                        repeat(product.rating) {
+                            Icon(Icons.Default.Star, contentDescription = null)
                         }
-                        Text(text = "${product.price}.00 $")
+                        repeat(5 - product.rating) {
+                            Icon(Icons.Outlined.StarRate, contentDescription = null)
+                        }
                     }
+                    Text(text = "${product.price}.00 $")
                 }
             }
-        }
-        result.onFailure {
-            showErrorNotification(context, "Error while fetching data")
         }
     }
 }

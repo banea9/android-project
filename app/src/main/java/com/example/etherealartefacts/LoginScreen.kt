@@ -60,16 +60,16 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
     val isLoading by loginViewModel.isLoading.collectAsState()
     val context = LocalContext.current
 
-    response?.let { result ->
-        result.onSuccess { response: LoginResponse ->
-            jwtTokenProvider.setJwtToken(response.jwt)
-            LaunchedEffect(Unit) {
+    LaunchedEffect(response) {
+        response?.let { result ->
+            result.onSuccess { response: LoginResponse ->
+                jwtTokenProvider.setJwtToken(response.jwt)
                 navigateToDetailsScreen()
             }
-        }
-        result.onFailure {
-            isEmailValid = false
-            showErrorNotification(context, "Invalid Credentials")
+            result.onFailure {
+                isEmailValid = false
+                showErrorNotification(context, "Invalid Credentials")
+            }
         }
     }
 
