@@ -109,9 +109,10 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
 
             Column(modifier = Modifier.padding(vertical = 56.dp, horizontal = 24.dp)) {
                 Text(
+                    modifier = Modifier.padding(bottom = 0.dp),
                     text = "Log in",
                     fontSize = 30.sp,
-                    color = Color(71, 51, 122),
+                    color = PurplePrimary,
                     fontWeight = FontWeight.Bold
                 )
                 OutlinedTextField(
@@ -122,7 +123,9 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     label = { Text("Email") },
                     placeholder = { Text(text = "Input Text") },
                     shape = RoundedCornerShape(size = 4.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 9.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
@@ -135,7 +138,9 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     password = newValue
                 }, label = { Text(" Password") },
                     shape = RoundedCornerShape(size = 4.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 18.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
@@ -168,7 +173,7 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     })
                 Button(
                     modifier = Modifier
-                        .padding(horizontal = 40.dp)
+                        .padding(horizontal = 16.dp)
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (!isLoading) PurplePrimary else InactivePrimary

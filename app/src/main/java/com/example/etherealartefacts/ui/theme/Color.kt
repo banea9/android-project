@@ -17,3 +17,9 @@ val InactivePrimary= Color(0xFFC4C4C4)
 val FocusedTextField = Color(0xFF722ED8)
 val DefaultTextField = Color(0xFF4A4A4A)
 val ErrorTextField = Color(0xFFB00020)
+
+val GreenIcon = Color(0xFF42AF46)
+val PurpleIcon = Color(0xFF67548B)
+
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
