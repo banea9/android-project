@@ -94,7 +94,7 @@ fun ProductsScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp),
                 title = {
                     Text(

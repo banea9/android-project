@@ -126,12 +126,14 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 9.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
                         focusedIndicatorColor = FocusedTextField,
                         errorIndicatorColor = ErrorTextField,
-                        textColor = if (isEmailValid) Color.Black else Color.Red
+                        unfocusedTextColor = if (isEmailValid) Color.Black else Color.Red,
+                        focusedTextColor = if (isEmailValid) Color.Black else Color.Red
                     )
                 )
                 OutlinedTextField(value = password, onValueChange = { newValue ->
@@ -141,12 +143,15 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 18.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
                         focusedIndicatorColor = FocusedTextField,
                         errorIndicatorColor = ErrorTextField,
-                        textColor = if (isEmailValid) Color.Black else Color.Red
+                        unfocusedTextColor = if (isEmailValid) Color.Black else Color.Red,
+                        focusedTextColor = if (isEmailValid) Color.Black else Color.Red
+
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = if (isPasswordVisible) {
