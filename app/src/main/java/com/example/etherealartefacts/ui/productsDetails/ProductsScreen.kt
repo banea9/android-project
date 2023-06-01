@@ -188,7 +188,7 @@ fun ProductsScreen() {
                             }
                         }
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
@@ -229,59 +229,61 @@ fun ProductsScreen() {
                                 }
                             }
                         }
-                        Text(
-                            text = "${stringResource(id = R.string.product_top_app_bar)} ${product.category}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            modifier = Modifier.padding(
-                                top = dimensionResource(id = R.dimen.description_top_padding),
-                                bottom = dimensionResource(id = R.dimen.description_bottom_padding)
-                            ),
-                            text = product.description,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = "${stringResource(id = R.string.price_sign)} ${product.price}${
-                                stringResource(
-                                    id = R.string.price_suffix
-                                )
-                            }",
-                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.btn_top_padding)),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "${stringResource(id = R.string.product_top_app_bar)} ${product.category}",
+                                style = MaterialTheme.typography.bodyLarge
                             )
-                        )
-                        Button(
-                            onClick = { /* to do when functionality is needed */ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PurplePrimary, contentColor = White
-                            ),
-                            contentPadding = PaddingValues(topAppBarPadding)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .padding(horizontal = dimensionResource(id = R.dimen.hor_padding))
-                                    .fillMaxWidth()
+                            Text(
+                                modifier = Modifier.padding(
+                                    top = dimensionResource(id = R.dimen.description_top_padding),
+                                    bottom = dimensionResource(id = R.dimen.description_bottom_padding)
+                                ),
+                                text = product.description,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "${stringResource(id = R.string.price_sign)} ${product.price}${
+                                    stringResource(
+                                        id = R.string.price_suffix
+                                    )
+                                }",
+                                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.btn_top_padding)),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Button(
+                                onClick = { /* to do when functionality is needed */ },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PurplePrimary, contentColor = White
+                                ),
+                                contentPadding = PaddingValues(topAppBarPadding)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = null,
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                        .width(dimensionResource(id = R.dimen.padding_large))
-                                        .height(dimensionResource(id = R.dimen.padding_large))
-                                        .padding(horizontal = dimensionResource(id = R.dimen.note_padding))
+                                        .padding(horizontal = dimensionResource(id = R.dimen.hor_padding))
+                                        .fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .width(dimensionResource(id = R.dimen.padding_large))
+                                            .height(dimensionResource(id = R.dimen.padding_large))
+                                            .padding(horizontal = dimensionResource(id = R.dimen.note_padding))
 
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.add_to_cart_btn),
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.text_border_radius))
-                                )
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.add_to_cart_btn),
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.text_border_radius))
+                                    )
+                                }
                             }
                         }
                     }

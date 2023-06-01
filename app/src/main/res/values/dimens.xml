@@ -18,7 +18,7 @@
     <dimen name="hor_padding">30dp</dimen>
     <dimen name="description_top_padding">23dp</dimen>
     <dimen name="description_bottom_padding">19dp</dimen>
-    <dimen name="btn_top_padding">52dp</dimen>
+    <dimen name="btn_top_padding">20dp</dimen>
     <dimen name="icon_size_small">11dp</dimen>
     <dimen name="icon_size_medium">18dp</dimen>
     <dimen name="icon_padding">13dp</dimen>
