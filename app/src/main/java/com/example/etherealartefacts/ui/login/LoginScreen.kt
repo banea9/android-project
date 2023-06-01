@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -37,18 +38,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.LoginRequest
 import com.example.etherealartefacts.models.LoginResponse
 import com.example.etherealartefacts.networking.JWTTokenProvider
+import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.DefaultTextField
 import com.example.etherealartefacts.ui.theme.ErrorTextField
 import com.example.etherealartefacts.ui.theme.FocusedTextField
@@ -70,6 +71,7 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
     val response by loginViewModel.response.collectAsState()
     val isLoading by loginViewModel.isLoading.collectAsState()
     val context = LocalContext.current
+    val bottomPadding = dimensionResource(id = R.dimen.login_padding_bottom)
 
     LaunchedEffect(response) {
         response?.let { result ->
@@ -96,61 +98,65 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 115.dp),
+                .padding(top = dimensionResource(id = R.dimen.logo_padding)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = logo,
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .width(256.dp)
-                    .height(162.dp)
+                    .width(dimensionResource(id = R.dimen.logo_width))
+                    .height(dimensionResource(id = R.dimen.logo_height))
             )
 
-            Column(modifier = Modifier.padding(vertical = 56.dp, horizontal = 24.dp)) {
+            Column(
+                modifier = Modifier.padding(
+                    vertical = dimensionResource(id = R.dimen.login_ver_padding),
+                    horizontal = dimensionResource(id = R.dimen.login_hor_padding)
+                )
+            ) {
                 Text(
-                    modifier = Modifier.padding(bottom = 0.dp),
-                    text = "Log in",
-                    fontSize = 30.sp,
+                    modifier = Modifier.padding(bottom = bottomPadding),
+                    text = stringResource(id = R.string.login_page_title),
+                    style = MaterialTheme.typography.titleLarge,
                     color = PurplePrimary,
-                    fontWeight = FontWeight.Bold
                 )
                 OutlinedTextField(
                     value = email,
                     onValueChange = { newValue ->
                         email = newValue
                     },
-                    label = { Text("Email") },
-                    placeholder = { Text(text = "Input Text") },
-                    shape = RoundedCornerShape(size = 4.dp),
+                    label = { Text(stringResource(id = R.string.email_label)) },
+                    placeholder = { Text(text = stringResource(id = R.string.email_placeholder)) },
+                    shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.text_border_radius)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 9.dp),
+                        .padding(bottom = bottomPadding),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
                         focusedIndicatorColor = FocusedTextField,
                         errorIndicatorColor = ErrorTextField,
-                        unfocusedTextColor = if (isEmailValid) Color.Black else Color.Red,
-                        focusedTextColor = if (isEmailValid) Color.Black else Color.Red
+                        unfocusedTextColor = if (isEmailValid) Black else ErrorTextField,
+                        focusedTextColor = if (isEmailValid) Black else ErrorTextField
                     )
                 )
                 OutlinedTextField(value = password, onValueChange = { newValue ->
                     password = newValue
-                }, label = { Text(" Password") },
-                    shape = RoundedCornerShape(size = 4.dp),
+                }, label = { Text(stringResource(id = R.string.password_label)) },
+                    shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.text_border_radius)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 18.dp),
+                        .padding(bottom = bottomPadding),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = DefaultTextField,
                         focusedIndicatorColor = FocusedTextField,
                         errorIndicatorColor = ErrorTextField,
-                        unfocusedTextColor = if (isEmailValid) Color.Black else Color.Red,
-                        focusedTextColor = if (isEmailValid) Color.Black else Color.Red
+                        unfocusedTextColor = if (isEmailValid) Black else ErrorTextField,
+                        focusedTextColor = if (isEmailValid) Black else ErrorTextField
 
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -164,21 +170,23 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                             IconButton(onClick = { isPasswordVisible = false }) {
                                 Icon(
                                     imageVector = Icons.Default.VisibilityOff,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = DefaultTextField
                                 )
                             }
                         } else {
                             IconButton(onClick = { isPasswordVisible = true }) {
                                 Icon(
                                     imageVector = Icons.Default.Visibility,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = DefaultTextField
                                 )
                             }
                         }
                     })
                 Button(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = dimensionResource(id = R.dimen.login_btn_padding))
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (!isLoading) PurplePrimary else InactivePrimary
@@ -191,8 +199,8 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                     enabled = !isLoading
                 ) {
                     Text(
-                        fontSize = 16.sp,
-                        text = "Log in",
+                        style = MaterialTheme.typography.bodyLarge,
+                        text = stringResource(id = R.string.login_page_title),
                     )
                 }
             }

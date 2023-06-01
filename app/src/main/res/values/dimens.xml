@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    // common
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">32dp</dimen>
+    <dimen name="top_app_bar_hor_padding">10dp</dimen>
+    <dimen name="text_border_radius">4dp</dimen>
+    // LoginScreen
+    <dimen name="logo_height">162dp</dimen>
+    <dimen name="logo_width">256dp</dimen>
+    <dimen name="logo_padding">115dp</dimen>
+    <dimen name="login_hor_padding">24dp</dimen>
+    <dimen name="login_ver_padding">56dp</dimen>
+    <dimen name="login_padding_bottom">18dp</dimen>
+    <dimen name="login_btn_padding">16dp</dimen>
+    // ProductScreen
+    <dimen name="hor_padding">30dp</dimen>
+    <dimen name="description_top_padding">23dp</dimen>
+    <dimen name="description_bottom_padding">19dp</dimen>
+    <dimen name="btn_top_padding">52dp</dimen>
+    <dimen name="icon_size_small">11dp</dimen>
+    <dimen name="icon_size_medium">18dp</dimen>
+    <dimen name="icon_padding">13dp</dimen>
+    <dimen name="note_x_offset">190dp</dimen>
+    <dimen name="note_y_offset">-330dp</dimen>
+    <dimen name="note_padding">5dp</dimen>
+    <dimen name="img_height">340dp</dimen>
+    <dimen name="note_text_padding">19dp</dimen>
+
+
+</resources>

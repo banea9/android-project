@@ -31,9 +31,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,12 +46,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.models.ProductDetailsModel
@@ -61,6 +60,7 @@ import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.GreenIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.ui.theme.PurplePrimary
+import com.example.etherealartefacts.ui.theme.White
 
 @Composable
 fun ProductsScreen() {
@@ -70,7 +70,8 @@ fun ProductsScreen() {
     val context = LocalContext.current
     val backgroundImg = painterResource(id = R.drawable.background_pd)
     val productState = remember { mutableStateOf<ProductDetailsModel?>(null) }
-
+    val topAppBarPadding = dimensionResource(id = R.dimen.top_app_bar_hor_padding)
+    val iconSize = dimensionResource(id = R.dimen.icon_size_small)
     LaunchedEffect(Unit) {
         productsViewModel.getProductDetails(2)
     }
@@ -95,11 +96,11 @@ fun ProductsScreen() {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                modifier = Modifier.padding(start = topAppBarPadding, end = topAppBarPadding),
                 title = {
                     Text(
-                        text = "Item",
-                        fontSize = 20.sp,
+                        text = stringResource(id = R.string.product_top_app_bar),
+                        style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -118,8 +119,7 @@ fun ProductsScreen() {
                         .clickable {
                             /* To be implemented with cart functionality */
                         }
-                        .padding(15.dp)) {
-
+                    ) {
                         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
                     }
                 }
@@ -141,7 +141,7 @@ fun ProductsScreen() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 30.dp),
+                        .padding(horizontal = dimensionResource(id = R.dimen.hor_padding)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
@@ -150,13 +150,21 @@ fun ProductsScreen() {
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(340.dp)
+                                .height(dimensionResource(id = R.dimen.img_height))
                         )
-                        Box(modifier = Modifier.offset(x = (190).dp, y = (-330).dp)) {
+                        Box(
+                            modifier = Modifier.offset(
+                                x = dimensionResource(id = R.dimen.note_x_offset),
+                                y = dimensionResource(id = R.dimen.note_y_offset)
+                            )
+                        ) {
                             Row(
                                 modifier = Modifier
-                                    .padding(vertical = 5.dp)
-                                    .background(Color.White, RoundedCornerShape(16.dp)),
+                                    .padding(vertical = dimensionResource(id = R.dimen.note_padding))
+                                    .background(
+                                        White,
+                                        RoundedCornerShape(dimensionResource(id = R.dimen.padding_medium))
+                                    ),
                                 verticalAlignment = Alignment.CenterVertically,
 
                                 ) {
@@ -164,17 +172,18 @@ fun ProductsScreen() {
                                     imageVector = Icons.Default.CheckCircleOutline,
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .padding(horizontal = 13.dp)
-                                        .height(18.dp)
-                                        .width(18.dp),
+                                        .padding(horizontal = dimensionResource(id = R.dimen.icon_padding))
+                                        .height(dimensionResource(id = R.dimen.icon_size_small))
+                                        .width(dimensionResource(id = R.dimen.icon_size_small)),
                                     tint = GreenIcon,
 
                                     )
                                 Text(
-                                    text = "In stock",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(end = 19.dp)
+                                    text = stringResource(id = R.string.product_in_stock),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(end = dimensionResource(id = R.dimen.note_text_padding))
                                 )
                             }
                         }
@@ -184,8 +193,9 @@ fun ProductsScreen() {
                         ) {
                             Text(
                                 text = product.title,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
                             )
 
                             Box {
@@ -193,16 +203,17 @@ fun ProductsScreen() {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = "${product.rating}",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
                                     )
                                     repeat(product.rating) {
                                         Icon(
                                             Icons.Default.Star,
                                             contentDescription = null,
                                             modifier = Modifier
-                                                .height(11.dp)
-                                                .width(11.dp),
+                                                .height(iconSize)
+                                                .width(iconSize),
                                             tint = PurpleIcon
                                         )
                                     }
@@ -210,53 +221,66 @@ fun ProductsScreen() {
                                         Icon(
                                             Icons.Outlined.StarRate, contentDescription = null,
                                             modifier = Modifier
-                                                .height(11.dp)
-                                                .width(11.dp),
+                                                .height(iconSize)
+                                                .width(iconSize),
+                                            tint = PurpleIcon
                                         )
                                     }
                                 }
                             }
                         }
-                        Text(text = "Category: ${product.category}", fontSize = 12.sp)
                         Text(
-                            modifier = Modifier.padding(top = 23.dp, bottom = 19.dp),
-                            text = product.description,
-                            fontSize = 16.sp
+                            text = "${stringResource(id = R.string.product_top_app_bar)} ${product.category}",
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "$${product.price}.00",
-                            modifier = Modifier.padding(bottom = 52.dp),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
+                            modifier = Modifier.padding(
+                                top = dimensionResource(id = R.dimen.description_top_padding),
+                                bottom = dimensionResource(id = R.dimen.description_bottom_padding)
+                            ),
+                            text = product.description,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = "${stringResource(id = R.string.price_sign)} ${product.price}${
+                                stringResource(
+                                    id = R.string.price_suffix
+                                )
+                            }",
+                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.btn_top_padding)),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            )
                         )
                         Button(
-                            onClick = { println("adding to cart") },
+                            onClick = { /* to do when functionality is needed */ },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PurplePrimary, contentColor = Color.White
+                                containerColor = PurplePrimary, contentColor = White
                             ),
-                            contentPadding = PaddingValues(10.dp)
+                            contentPadding = PaddingValues(topAppBarPadding)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center,
                                 modifier = Modifier
-                                    .padding(horizontal = 40.dp)
+                                    .padding(horizontal = dimensionResource(id = R.dimen.hor_padding))
                                     .fillMaxWidth()
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .width(32.dp)
-                                        .height(32.dp)
-                                        .padding(horizontal = 5.dp)
+                                        .width(dimensionResource(id = R.dimen.padding_large))
+                                        .height(dimensionResource(id = R.dimen.padding_large))
+                                        .padding(horizontal = dimensionResource(id = R.dimen.note_padding))
 
                                 )
                                 Text(
-                                    text = "Add to cart",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(start = 4.dp)
+                                    text = stringResource(id = R.string.add_to_cart_btn),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.text_border_radius))
                                 )
                             }
                         }
