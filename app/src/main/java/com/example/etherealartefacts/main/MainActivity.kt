@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.etherealartefacts.ui.login.LoginScreen
 import com.example.etherealartefacts.ui.productsDetails.ProductsScreen
+import com.example.etherealartefacts.ui.home.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,13 +39,14 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(route = "login") {
                                 LoginScreen(navigateToDetailsScreen = {
-                                    navController.navigate(
-                                        "detailsScreen"
-                                    )
+                                    navController.navigate("/")
                                 })
                             }
                             composable(route = "detailsScreen") {
                                 ProductsScreen()
+                            }
+                            composable(route = "/") {
+                                HomeScreen()
                             }
                         }
                     }

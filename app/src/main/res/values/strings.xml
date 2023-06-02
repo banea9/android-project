@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Ethereal Artefacts</string>
+    <string name="product_category">Category:</string>
+    <string name="price_sign">$</string>
+    <string name="price_suffix">.00</string>
     // Login Page Text
     <string name="login_page_title">Log in</string>
     <string name="login_error">Your email or password are incorrect</string>
@@ -8,11 +11,12 @@
     <string name="password_label">Password</string>
     // Product Details Page Text
     <string name="product_top_app_bar">Item</string>
-    <string name="product_category">Category:</string>
-    <string name="price_sign">$</string>
-    <string name="price_suffix">.00</string>
     <string name="add_to_cart_btn">Add to cart</string>
     <string name="product_in_stock">In stock</string>
+    // Home Page
+    <string name="home_page_title">Home</string>
+    <string name="search_placeholder">Search</string>
+    <string name="home_subtitle">New products</string>
     <string name="error_fetching">Error while fetching data</string>
 
 </resources>

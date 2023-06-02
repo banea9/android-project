@@ -14,4 +14,8 @@ class DefaultRepository(private val apiService: API): ApiHelper {
     override suspend fun getProductDetails(id: Int): ProductDetailsModel {
         return apiService.getProductDetails(id)
     }
+
+    override suspend fun getProducts(): List<ProductDetailsModel> {
+        return apiService.getProducts()
+    }
 }

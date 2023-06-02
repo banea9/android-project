@@ -8,4 +8,7 @@ interface ApiHelper {
     suspend fun login(request: LoginRequest): LoginResponse
 
     suspend fun getProductDetails(id: Int): ProductDetailsModel
+
+    suspend fun getProducts(): List<ProductDetailsModel>
+
 }
