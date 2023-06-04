@@ -54,7 +54,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
@@ -64,10 +66,11 @@ import com.example.etherealartefacts.ui.theme.GrayText
 import com.example.etherealartefacts.ui.theme.SearchBoxBg
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navigateToDetailsScreen: (Int) -> Unit = {}) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val response by homeViewModel.response.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
+    val filteredProducts = remember { mutableStateOf(emptyList<ProductDetailsModel>()) }
     val productsState = remember { mutableStateOf(emptyList<ProductDetailsModel>()) }
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
@@ -75,6 +78,7 @@ fun HomeScreen() {
     val searchIcon = dimensionResource(id = R.dimen.search_icons_size)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
     val searchState = remember { mutableStateOf("") }
+    val backgroundImg = painterResource(id = R.drawable.background_pd)
 
     LaunchedEffect(Unit) {
         homeViewModel.getProducts()
@@ -83,6 +87,7 @@ fun HomeScreen() {
         response?.let {
             it.onSuccess { products ->
                 productsState.value = products
+                filteredProducts.value = products
             }
             it.onFailure {
                 showErrorNotification(context, "Error while fetching data")
@@ -148,159 +153,180 @@ fun HomeScreen() {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
-                .padding(horizontal = horPadding)
+                .fillMaxSize()
         ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.description_top_padding)),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = SearchBoxBg,
-                    unfocusedContainerColor = SearchBoxBg,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                value = searchState.value,
-                onValueChange = { value -> searchState.value = value },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
-                            .height(searchIcon)
-                            .width(searchIcon)
-                    )
-                },
-                trailingIcon = {
-                    if (searchState.value != "") {
-                        IconButton(onClick = { searchState.value = "" })
-                        {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
-                                    .height(searchIcon)
-                                    .width(searchIcon)
-                            )
-                        }
-                    }
-                },
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.search_placeholder),
-                        color = DefaultTextField
-                    )
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.search_border_radius)),
+            Image(
+                painter = backgroundImg,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
             )
-
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = horPadding),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
+                    .padding(horizontal = horPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(id = R.string.home_subtitle),
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Icon(
-                    imageVector = Icons.Default.FilterList,
-                    contentDescription = null,
-                    Modifier
-                        .width(dimensionResource(id = R.dimen.filter_icon_height))
-                        .height(dimensionResource(id = R.dimen.filter_icon_width))
-                )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                items(productsState.value) { product ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = dimensionResource(id = R.dimen.text_box_padding))
-                            .drawBehind {
-                                drawLine(
-                                    color = BorderGray,
-                                    start = Offset(0f, size.height),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = borderWidth.toPx()
-                                )
-                            }, horizontalArrangement = Arrangement.Start
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(model = product.image),
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.description_top_padding)),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = SearchBoxBg,
+                        unfocusedContainerColor = SearchBoxBg,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                    value = searchState.value,
+                    onValueChange = { value ->
+                        searchState.value = value
+                        filteredProducts.value = productsState.value.filter { product ->
+                            product.title.contains(searchState.value, ignoreCase = true)
+                        }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
                             contentDescription = null,
                             modifier = Modifier
-                                .height(dimensionResource(id = R.dimen.home_img_size))
-                                .width(dimensionResource(id = R.dimen.home_img_size))
-                                .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                                .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
+                                .height(searchIcon)
+                                .width(searchIcon)
                         )
-                        Column(
+                    },
+                    trailingIcon = {
+                        if (searchState.value != "") {
+                            IconButton(onClick = { searchState.value = "" })
+                            {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
+                                        .height(searchIcon)
+                                        .width(searchIcon)
+                                )
+                            }
+                        }
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.search_placeholder),
+                            color = DefaultTextField
+                        )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.search_border_radius)),
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = horPadding),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.home_subtitle),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = null,
+                        Modifier
+                            .width(dimensionResource(id = R.dimen.filter_icon_height))
+                            .height(dimensionResource(id = R.dimen.filter_icon_width))
+                    )
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    items(filteredProducts.value) { product ->
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = dimensionResource(id = R.dimen.text_box_padding))
+                                .padding(bottom = dimensionResource(id = R.dimen.text_box_padding))
+                                .drawBehind {
+                                    drawLine(
+                                        color = BorderGray,
+                                        start = Offset(0f, size.height),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = borderWidth.toPx()
+                                    )
+                                }
+                                .clickable {
+                                    navigateToDetailsScreen(product.id)
+                                }, horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(
-                                text = product.category,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = GrayText
+                            Image(
+                                painter = rememberAsyncImagePainter(model = product.image),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.home_img_size))
+                                    .width(dimensionResource(id = R.dimen.home_img_size))
+                                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
                             )
-                            Text(
-                                text = product.title,
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            )
-                            Text(
-                                text = product.short_description,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = GrayText
-                            )
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = dimensionResource(id = R.dimen.text_box_padding))
+                            ) {
                                 Text(
-                                    text = "${product.rating}",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
+                                    text = product.category,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = GrayText
                                 )
-                                repeat(product.rating) {
-                                    Icon(
-                                        Icons.Default.Star,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .height(iconSizeSmall)
-                                            .width(iconSizeSmall),
-                                        tint = PurpleIcon
+                                Text(
+                                    text = product.title,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold,
                                     )
-                                }
-                                repeat(5 - product.rating) {
-                                    Icon(
-                                        Icons.Default.Star, contentDescription = null,
-                                        modifier = Modifier
-                                            .height(iconSizeSmall)
-                                            .width(iconSizeSmall),
-                                        tint = GrayIcon
+                                )
+                                Text(
+                                    text = product.short_description,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = GrayText
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "${product.rating}",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
                                     )
+                                    repeat(product.rating) {
+                                        Icon(
+                                            Icons.Default.Star,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .height(iconSizeSmall)
+                                                .width(iconSizeSmall),
+                                            tint = PurpleIcon
+                                        )
+                                    }
+                                    repeat(5 - product.rating) {
+                                        Icon(
+                                            Icons.Default.Star, contentDescription = null,
+                                            modifier = Modifier
+                                                .height(iconSizeSmall)
+                                                .width(iconSizeSmall),
+                                            tint = GrayIcon
+                                        )
+                                    }
                                 }
+                                Text(
+                                    text = "${stringResource(id = R.string.price_sign)} ${product.price}${
+                                        stringResource(
+                                            id = R.string.price_suffix
+                                        )
+                                    }",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
                             }
-                            Text(
-                                text = "${stringResource(id = R.string.price_sign)} ${product.price}${
-                                    stringResource(
-                                        id = R.string.price_suffix
-                                    )
-                                }",
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
                         }
                     }
                 }
