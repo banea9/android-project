@@ -53,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
@@ -63,7 +64,7 @@ import com.example.etherealartefacts.ui.theme.PurplePrimary
 import com.example.etherealartefacts.ui.theme.White
 
 @Composable
-fun ProductsScreen() {
+fun ProductsScreen(navController: NavController, productId: Int) {
     val productsViewModel: ProductDetailsViewModel = hiltViewModel()
     val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
@@ -76,7 +77,7 @@ fun ProductsScreen() {
     val errText = stringResource(id = R.string.error_fetching)
 
     LaunchedEffect(Unit) {
-        productsViewModel.getProductDetails(2)
+        productsViewModel.getProductDetails(productId)
     }
 
     LaunchedEffect(errorOccurred) {

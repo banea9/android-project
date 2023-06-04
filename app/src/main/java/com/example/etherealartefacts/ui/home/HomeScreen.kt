@@ -58,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.DefaultTextField
@@ -66,7 +67,7 @@ import com.example.etherealartefacts.ui.theme.GrayText
 import com.example.etherealartefacts.ui.theme.SearchBoxBg
 
 @Composable
-fun HomeScreen(navigateToDetailsScreen: (Int) -> Unit = {}) {
+fun HomeScreen(navController: NavController) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val response by homeViewModel.response.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
@@ -259,7 +260,7 @@ fun HomeScreen(navigateToDetailsScreen: (Int) -> Unit = {}) {
                                     )
                                 }
                                 .clickable {
-                                    navigateToDetailsScreen(product.id)
+                                    navController.navigate("detailsScreen/${product.id}")
                                 }, horizontalArrangement = Arrangement.Start
                         ) {
                             Image(

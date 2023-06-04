@@ -9,10 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import com.example.etherealartefacts.ui.theme.EtherealArtefactsTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.etherealartefacts.ui.login.LoginScreen
 import com.example.etherealartefacts.ui.productsDetails.ProductsScreen
 import com.example.etherealartefacts.ui.home.HomeScreen
@@ -42,11 +44,15 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("/")
                                 })
                             }
-                            composable(route = "detailsScreen") {
-                                ProductsScreen()
-                            }
+                            composable(route = "detailsScreen/{productId}", arguments = listOf(
+                                navArgument("productId") {type = NavType.IntType}
+                            )) {backStackEntry ->
+                                val productId = backStackEntry.arguments?.getInt("productId")
+                                if (productId != null) {
+                                    ProductsScreen(navController = navController, productId = productId)
+                                }                            }
                             composable(route = "/") {
-                                HomeScreen()
+                                HomeScreen(navController)
                             }
                         }
                     }
