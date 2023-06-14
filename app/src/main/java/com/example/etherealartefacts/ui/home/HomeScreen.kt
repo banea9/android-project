@@ -34,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.R
-import com.example.etherealartefacts.models.ProductDetailsModel
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.utils.showErrorNotification
 import androidx.compose.foundation.lazy.items
@@ -51,6 +50,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -69,30 +69,27 @@ import com.example.etherealartefacts.ui.theme.SearchBoxBg
 @Composable
 fun HomeScreen(navController: NavController) {
     val homeViewModel: HomeViewModel = hiltViewModel()
-    val response by homeViewModel.response.collectAsState()
+    val products by homeViewModel.products.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
-    val filteredProducts = remember { mutableStateOf(emptyList<ProductDetailsModel>()) }
-    val productsState = remember { mutableStateOf(emptyList<ProductDetailsModel>()) }
+    val filterCriteria by homeViewModel.filterCriteria.collectAsState()
+    val filteredProducts by homeViewModel.filteredProducts.collectAsState()
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
     val searchIcon = dimensionResource(id = R.dimen.search_icons_size)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
-    val searchState = remember { mutableStateOf("") }
     val backgroundImg = painterResource(id = R.drawable.background_pd)
+    val errorOccurred by homeViewModel.errorOccurred.collectAsState()
+    val errText = stringResource(id = R.string.error_fetching)
+    var showedFetchErr by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         homeViewModel.getProducts()
     }
-    LaunchedEffect(response) {
-        response?.let {
-            it.onSuccess { products ->
-                productsState.value = products
-                filteredProducts.value = products
-            }
-            it.onFailure {
-                showErrorNotification(context, "Error while fetching data")
-            }
+    LaunchedEffect(errorOccurred) {
+        if (errorOccurred == true && !showedFetchErr) {
+            showedFetchErr = true
+            showErrorNotification(context, errText)
         }
     }
 
@@ -181,12 +178,9 @@ fun HomeScreen(navController: NavController) {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
-                    value = searchState.value,
+                    value = filterCriteria,
                     onValueChange = { value ->
-                        searchState.value = value
-                        filteredProducts.value = productsState.value.filter { product ->
-                            product.title.contains(searchState.value, ignoreCase = true)
-                        }
+                        homeViewModel.onChange(value)
                     },
                     leadingIcon = {
                         Icon(
@@ -199,8 +193,10 @@ fun HomeScreen(navController: NavController) {
                         )
                     },
                     trailingIcon = {
-                        if (searchState.value != "") {
-                            IconButton(onClick = { searchState.value = "" })
+                        if (filterCriteria != "") {
+                            IconButton(onClick = {
+                                homeViewModel.clear()
+                            })
                             {
                                 Icon(
                                     Icons.Default.Close,
@@ -246,7 +242,7 @@ fun HomeScreen(navController: NavController) {
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    items(filteredProducts.value) { product ->
+                    items(if(filterCriteria.isNotEmpty()) filteredProducts else products) { product ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

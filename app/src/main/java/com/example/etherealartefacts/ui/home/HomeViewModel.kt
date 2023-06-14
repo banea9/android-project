@@ -18,20 +18,42 @@ class HomeViewModel @Inject constructor(
 
     ) : ViewModel() {
 
-    private val _response = MutableStateFlow<Result<List<ProductDetailsModel>>?>(null)
-    val response: StateFlow<Result<List<ProductDetailsModel>>?> = _response
+    private val _products = MutableStateFlow<List<ProductDetailsModel>>(emptyList())
+    val products: StateFlow<List<ProductDetailsModel>> = _products
+
+    private val _filteredProducts = MutableStateFlow<List<ProductDetailsModel>>(emptyList())
+    val filteredProducts: StateFlow<List<ProductDetailsModel>> = _filteredProducts
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _errorOccurred = MutableStateFlow<Boolean?>(null)
+    val errorOccurred: StateFlow<Boolean?> = _errorOccurred
+
+    private val _filterCriteria = MutableStateFlow<String>("")
+    val filterCriteria: StateFlow<String> = _filterCriteria
+
+    fun onChange(value: String) {
+        _filterCriteria.value = value
+        val filteredList = products.value.filter { product: ProductDetailsModel ->
+            product.title.contains(value, ignoreCase = true)
+        }
+        _filteredProducts.value = filteredList
+    }
+
+    fun clear() {
+        _filterCriteria.value = ""
+    }
 
     fun getProducts() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 val getProductsResponse = repository.getProducts()
-                _response.value = Result.success(getProductsResponse)
+                _products.value = getProductsResponse
+                _errorOccurred.value = false
             } catch (e: Exception) {
-                _response.value = Result.failure(e)
+                _errorOccurred.value = true
             } finally {
                 _isLoading.value = false
             }
