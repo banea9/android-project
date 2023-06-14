@@ -27,6 +27,7 @@ class LoginViewModel @Inject constructor(
 
 
     fun login(request: LoginRequest) {
+        _errorOccurred.value = null
         viewModelScope.launch {
             try {
                 _isLoading.value = true
