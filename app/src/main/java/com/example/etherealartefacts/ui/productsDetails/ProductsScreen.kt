@@ -41,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.etherealartefacts.models.ProductDetailsModel
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.ui.theme.Black
@@ -65,26 +65,22 @@ import com.example.etherealartefacts.ui.theme.White
 @Composable
 fun ProductsScreen() {
     val productsViewModel: ProductDetailsViewModel = hiltViewModel()
-    val response by productsViewModel.response.collectAsState()
+    val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
+    var showedFetchErr by remember { mutableStateOf(false) }
+    val errorOccurred by productsViewModel.errorOccurred.collectAsState()
     val context = LocalContext.current
     val backgroundImg = painterResource(id = R.drawable.background_pd)
-    val productState = remember { mutableStateOf<ProductDetailsModel?>(null) }
     val topAppBarPadding = dimensionResource(id = R.dimen.top_app_bar_hor_padding)
     val iconSize = dimensionResource(id = R.dimen.icon_size_small)
+    
     LaunchedEffect(Unit) {
         productsViewModel.getProductDetails(2)
     }
-
-    LaunchedEffect(response) {
-        response?.let { result ->
-            result.onSuccess { product: ProductDetailsModel ->
-                productState.value = product
-            }
-            result.onFailure {
-                showErrorNotification(context, "Error while fetching data")
-            }
-        }
+    
+    if(errorOccurred == true && !showedFetchErr) {
+        showedFetchErr = true
+        showErrorNotification(context, stringResource(id = R.string.error_fetching))
     }
 
     if (isLoading) {
@@ -126,7 +122,7 @@ fun ProductsScreen() {
             )
         }
     ) { paddingValues ->
-        productState.value?.let { product ->
+        products?.let { product ->
             Box(
                 modifier = Modifier
                     .padding(top = paddingValues.calculateTopPadding())

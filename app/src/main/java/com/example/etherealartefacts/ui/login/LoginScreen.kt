@@ -25,7 +25,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,8 +46,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.LoginRequest
-import com.example.etherealartefacts.models.LoginResponse
-import com.example.etherealartefacts.networking.JWTTokenProvider
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.DefaultTextField
 import com.example.etherealartefacts.ui.theme.ErrorTextField
@@ -59,32 +56,31 @@ import com.example.etherealartefacts.utils.showErrorNotification
 
 
 @Composable
-fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () -> Unit = {}) {
+fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var showedErrNotification by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val logo = painterResource(id = R.drawable.logo)
     val backgroundImage = painterResource(id = R.drawable.background)
     val loginViewModel: LoginViewModel = hiltViewModel()
-    val response by loginViewModel.response.collectAsState()
     val isLoading by loginViewModel.isLoading.collectAsState()
+    val errorOccurred by loginViewModel.errorOccurred.collectAsState()
     val context = LocalContext.current
     val bottomPadding = dimensionResource(id = R.dimen.login_padding_bottom)
 
-    LaunchedEffect(response) {
-        response?.let { result ->
-            result.onSuccess { response: LoginResponse ->
-                jwtTokenProvider.setJwtToken(response.jwt)
-                navigateToDetailsScreen()
-            }
-            result.onFailure {
-                isEmailValid = false
-                showErrorNotification(context, "Invalid Credentials")
-            }
-        }
+    if(errorOccurred == false ) {
+        navigateToDetailsScreen()
     }
+
+    if(errorOccurred == true && !showedErrNotification) {
+        isEmailValid = false
+        showedErrNotification = true
+        showErrorNotification(context, stringResource(id = R.string.login_error))
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -192,6 +188,7 @@ fun LoginScreen(jwtTokenProvider: JWTTokenProvider, navigateToDetailsScreen: () 
                         containerColor = if (!isLoading) PurplePrimary else InactivePrimary
                     ),
                     onClick = {
+                        showedErrNotification = false
                         val body = LoginRequest(email, password)
                         loginViewModel.login(body)
                         keyboardController?.hide()

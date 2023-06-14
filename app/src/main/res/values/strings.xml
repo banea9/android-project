@@ -13,4 +13,6 @@
     <string name="price_suffix">.00</string>
     <string name="add_to_cart_btn">Add to cart</string>
     <string name="product_in_stock">In stock</string>
+    <string name="error_fetching">Error while fetching data</string>
+
 </resources>
