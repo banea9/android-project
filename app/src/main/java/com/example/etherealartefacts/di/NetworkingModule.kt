@@ -1,6 +1,6 @@
 package com.example.etherealartefacts.di
 
-import com.example.etherealartefacts.DefaultRepository
+import com.example.etherealartefacts.repository.DefaultRepository
 import com.example.etherealartefacts.networking.API
 import com.example.etherealartefacts.networking.APIClient
 import com.example.etherealartefacts.networking.JWTInterceptor

@@ -1,4 +1,4 @@
-package com.example.etherealartefacts
+package com.example.etherealartefacts.networking
 
 import com.example.etherealartefacts.models.LoginRequest
 import com.example.etherealartefacts.models.LoginResponse

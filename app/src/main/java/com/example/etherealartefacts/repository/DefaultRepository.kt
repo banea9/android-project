@@ -1,5 +1,6 @@
-package com.example.etherealartefacts
+package com.example.etherealartefacts.repository
 
+import com.example.etherealartefacts.networking.ApiHelper
 import com.example.etherealartefacts.models.LoginRequest
 import com.example.etherealartefacts.models.LoginResponse
 import com.example.etherealartefacts.models.ProductDetailsModel
