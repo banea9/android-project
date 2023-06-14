@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,15 +71,17 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     val errorOccurred by loginViewModel.errorOccurred.collectAsState()
     val context = LocalContext.current
     val bottomPadding = dimensionResource(id = R.dimen.login_padding_bottom)
+    val errText = stringResource(id = R.string.login_error)
+    LaunchedEffect(errorOccurred) {
+        if(errorOccurred == false) {
+            navigateToDetailsScreen()
+        }
 
-    if(errorOccurred == false ) {
-        navigateToDetailsScreen()
-    }
-
-    if(errorOccurred == true && !showedErrNotification) {
-        isEmailValid = false
-        showedErrNotification = true
-        showErrorNotification(context, stringResource(id = R.string.login_error))
+        if(errorOccurred == true && !showedErrNotification) {
+            isEmailValid = false
+            showedErrNotification = true
+            showErrorNotification(context, errText)
+        }
     }
 
     Box(

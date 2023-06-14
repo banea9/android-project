@@ -73,15 +73,19 @@ fun ProductsScreen() {
     val backgroundImg = painterResource(id = R.drawable.background_pd)
     val topAppBarPadding = dimensionResource(id = R.dimen.top_app_bar_hor_padding)
     val iconSize = dimensionResource(id = R.dimen.icon_size_small)
-    
+    val errText = stringResource(id = R.string.error_fetching)
+
     LaunchedEffect(Unit) {
         productsViewModel.getProductDetails(2)
     }
-    
-    if(errorOccurred == true && !showedFetchErr) {
-        showedFetchErr = true
-        showErrorNotification(context, stringResource(id = R.string.error_fetching))
+
+    LaunchedEffect(errorOccurred) {
+        if(errorOccurred == true && !showedFetchErr) {
+            showedFetchErr = true
+            showErrorNotification(context, errText)
+        }
     }
+
 
     if (isLoading) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
