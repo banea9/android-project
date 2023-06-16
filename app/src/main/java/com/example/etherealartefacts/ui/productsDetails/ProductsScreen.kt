@@ -26,7 +26,6 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.StarRate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -57,7 +54,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
-import com.example.etherealartefacts.ui.theme.Black
+import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.theme.GreenIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.ui.theme.PurplePrimary
@@ -96,7 +93,7 @@ fun ProductsScreen(navController: NavController, productId: Int) {
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            AppBar(
                 modifier = Modifier.padding(start = topAppBarPadding, end = topAppBarPadding),
                 title = {
                     Text(
@@ -105,23 +102,18 @@ fun ProductsScreen(navController: NavController, productId: Int) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /*To be implemented with homework 2-2 (home screen)*/ }) {
-                        Icon(Icons.Filled.ArrowBack, null)
-                    }
-                }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Black,
-                    actionIconContentColor = Black,
-                    navigationIconContentColor = Black,
-                ), actions = {
+                }, actions = {
                     Box(modifier = Modifier
                         .clickable {
                             /* To be implemented with cart functionality */
                         }
                     ) {
                         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /*To be implemented with homework 2-2 (home screen)*/ }) {
+                        Icon(Icons.Filled.ArrowBack, null)
                     }
                 }
             )

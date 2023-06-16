@@ -84,6 +84,11 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             AppBar(
+                modifier = Modifier.padding(
+                    start = horPadding, end = horPadding, bottom = dimensionResource(
+                        id = R.dimen.btn_top_padding
+                    )
+                ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.home_page_title),
@@ -119,7 +124,8 @@ fun HomeScreen(navController: NavController) {
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
                         )
                     }
-                }
+                },
+                navigationIcon = {}
             )
         }
     ) { paddingValues ->
