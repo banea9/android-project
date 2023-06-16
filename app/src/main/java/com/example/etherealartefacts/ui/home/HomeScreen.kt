@@ -69,10 +69,9 @@ import com.example.etherealartefacts.ui.theme.SearchBoxBg
 @Composable
 fun HomeScreen(navController: NavController) {
     val homeViewModel: HomeViewModel = hiltViewModel()
-    val products by homeViewModel.products.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val filterCriteria by homeViewModel.filterCriteria.collectAsState()
-    val filteredProducts by homeViewModel.filteredProducts.collectAsState()
+    val displayedProducts by homeViewModel.displayedProducts.collectAsState()
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
@@ -239,7 +238,7 @@ fun HomeScreen(navController: NavController) {
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    items(if(filterCriteria.isNotEmpty()) filteredProducts else products) { product ->
+                    items(displayedProducts) { product ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

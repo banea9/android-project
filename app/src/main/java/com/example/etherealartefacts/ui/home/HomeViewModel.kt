@@ -6,7 +6,10 @@ import com.example.etherealartefacts.models.ProductDetailsModel
 import com.example.etherealartefacts.repository.DefaultRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
@@ -18,10 +21,10 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _products = MutableStateFlow<List<ProductDetailsModel>>(emptyList())
-    val products: StateFlow<List<ProductDetailsModel>> = _products
+    private val products: StateFlow<List<ProductDetailsModel>> = _products
 
     private val _filteredProducts = MutableStateFlow<List<ProductDetailsModel>>(emptyList())
-    val filteredProducts: StateFlow<List<ProductDetailsModel>> = _filteredProducts
+    private val filteredProducts: StateFlow<List<ProductDetailsModel>> = _filteredProducts
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -29,8 +32,22 @@ class HomeViewModel @Inject constructor(
     private val _errorOccurred = MutableStateFlow<Boolean?>(null)
     val errorOccurred: StateFlow<Boolean?> = _errorOccurred
 
-    private val _filterCriteria = MutableStateFlow<String>("")
+    private val _filterCriteria = MutableStateFlow("")
     val filterCriteria: StateFlow<String> = _filterCriteria
+
+    // Custom getter
+    val displayedProducts: StateFlow<List<ProductDetailsModel>> = combine(
+        filterCriteria,
+        products,
+        filteredProducts
+    ) { criteria, allProducts, filtered ->
+        if (criteria.isNotEmpty()) {
+            filtered
+        } else {
+            allProducts
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
 
     fun onChange(value: String) {
         _filterCriteria.value = value
@@ -44,7 +61,7 @@ class HomeViewModel @Inject constructor(
         _filterCriteria.value = ""
     }
 
-    fun getProducts() {
+    private fun getProducts() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
