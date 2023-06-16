@@ -37,18 +37,12 @@ import com.example.etherealartefacts.R
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.utils.showErrorNotification
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
@@ -59,12 +53,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
+import com.example.etherealartefacts.ui.shared.SearchField
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
-import com.example.etherealartefacts.ui.theme.DefaultTextField
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
-import com.example.etherealartefacts.ui.theme.SearchBoxBg
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -75,7 +68,6 @@ fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
-    val searchIcon = dimensionResource(id = R.dimen.search_icons_size)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
     val backgroundImg = painterResource(id = R.drawable.background_pd)
     val errorOccurred by homeViewModel.errorOccurred.collectAsState()
@@ -164,57 +156,11 @@ fun HomeScreen(navController: NavController) {
                     .padding(horizontal = horPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.description_top_padding)),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = SearchBoxBg,
-                        unfocusedContainerColor = SearchBoxBg,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                    value = filterCriteria,
-                    onValueChange = { value ->
-                        homeViewModel.onChange(value)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
-                                .height(searchIcon)
-                                .width(searchIcon)
-                        )
-                    },
-                    trailingIcon = {
-                        if (filterCriteria != "") {
-                            IconButton(onClick = {
-                                homeViewModel.clear()
-                            })
-                            {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .padding(dimensionResource(id = R.dimen.top_app_bar_hor_padding))
-                                        .height(searchIcon)
-                                        .width(searchIcon)
-                                )
-                            }
-                        }
-                    },
-                    placeholder = {
-                        Text(
-                            text = stringResource(id = R.string.search_placeholder),
-                            color = DefaultTextField
-                        )
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.search_border_radius)),
-                )
-
+                SearchField(filterCriteria = filterCriteria, onChange = { value ->
+                    homeViewModel.onChange(value)
+                }, clear = {
+                    homeViewModel.clear()
+                })
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
