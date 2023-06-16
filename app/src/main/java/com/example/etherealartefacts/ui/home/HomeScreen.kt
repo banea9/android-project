@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.etherealartefacts.ui.home
 
 import androidx.compose.foundation.Image
@@ -40,21 +38,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
+import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
-import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
@@ -89,12 +83,7 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.padding(
-                    start = horPadding, end = horPadding, bottom = dimensionResource(
-                        id = R.dimen.btn_top_padding
-                    )
-                ),
+            AppBar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.home_page_title),
@@ -103,12 +92,7 @@ fun HomeScreen(navController: NavController) {
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Black,
-                    actionIconContentColor = Black,
-                    navigationIconContentColor = Black,
-                ), actions = {
+                actions = {
                     Box(modifier = Modifier
                         .clickable {
                             /* To be implemented with cart functionality */
