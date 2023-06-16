@@ -83,9 +83,6 @@ fun HomeScreen(navController: NavController) {
     val errText = stringResource(id = R.string.error_fetching)
     var showedFetchErr by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        homeViewModel.getProducts()
-    }
     LaunchedEffect(errorOccurred) {
         if (errorOccurred == true && !showedFetchErr) {
             showedFetchErr = true

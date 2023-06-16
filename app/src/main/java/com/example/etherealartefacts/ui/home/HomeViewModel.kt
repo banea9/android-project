@@ -15,8 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: DefaultRepository,
-
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _products = MutableStateFlow<List<ProductDetailsModel>>(emptyList())
     val products: StateFlow<List<ProductDetailsModel>> = _products
@@ -59,4 +58,9 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    init {
+        getProducts()
+    }
+
 }
