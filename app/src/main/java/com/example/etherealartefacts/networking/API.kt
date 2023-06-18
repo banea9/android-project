@@ -13,6 +13,10 @@ interface API {
     @GET(value="products/{id}?populate=*")
     suspend fun getProductDetails(@Path("id") id: Int): ProductDetailsModel
 
+    @GET(value="products?populate=*")
+    suspend fun getProducts(): List<ProductDetailsModel>
+
+
     @POST(value="auth/local")
     suspend fun login(@Body request: LoginRequest): LoginResponse
 

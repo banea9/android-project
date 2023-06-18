@@ -18,8 +18,13 @@ val FocusedTextField = Color(0xFF722ED8)
 val DefaultTextField = Color(0xFF4A4A4A)
 val ErrorTextField = Color(0xFFB00020)
 
+val SearchBoxBg = Color(0xFFECE6F0)
+val BorderGray = Color(0xFFCCCCCC)
 val GreenIcon = Color(0xFF42AF46)
 val PurpleIcon = Color(0xFF67548B)
+val GrayIcon = Color(0xFFD8D9D8)
+
+val GrayText = Color(0xFF4A4A4A)
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)

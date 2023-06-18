@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     // common
+    <dimen name="padding_extra_small">2dp</dimen>
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">32dp</dimen>
     <dimen name="top_app_bar_hor_padding">10dp</dimen>
     <dimen name="text_border_radius">4dp</dimen>
+    <dimen name="hor_padding">30dp</dimen>
     // LoginScreen
     <dimen name="logo_height">162dp</dimen>
     <dimen name="logo_width">256dp</dimen>
@@ -15,7 +17,6 @@
     <dimen name="login_padding_bottom">18dp</dimen>
     <dimen name="login_btn_padding">16dp</dimen>
     // ProductScreen
-    <dimen name="hor_padding">30dp</dimen>
     <dimen name="description_top_padding">23dp</dimen>
     <dimen name="description_bottom_padding">19dp</dimen>
     <dimen name="btn_top_padding">20dp</dimen>
@@ -27,6 +28,16 @@
     <dimen name="note_padding">5dp</dimen>
     <dimen name="img_height">340dp</dimen>
     <dimen name="note_text_padding">19dp</dimen>
-
+    // HomePage
+    <dimen name="home_img_size">130dp</dimen>
+    <dimen name="text_box_padding">20dp</dimen>
+    <dimen name="text_field_pb">5dp</dimen>
+    <dimen name="home_profile_icon">27dp</dimen>
+    <dimen name="home_cart_icon">25dp</dimen>
+    <dimen name="filter_icon_height">26dp</dimen>
+    <dimen name="filter_icon_width">23dp</dimen>
+    <dimen name="border_width">1dp</dimen>
+    <dimen name="search_border_radius">100dp</dimen>
+    <dimen name="search_icons_size">23dp</dimen>
 
 </resources>
