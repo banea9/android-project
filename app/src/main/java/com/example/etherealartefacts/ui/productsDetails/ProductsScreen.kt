@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package com.example.etherealartefacts.ui.productsDetails
 
 import androidx.compose.foundation.Image
@@ -27,7 +25,6 @@ import androidx.compose.material.icons.outlined.StarRate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
@@ -59,9 +55,12 @@ import com.example.etherealartefacts.ui.theme.GreenIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.ui.theme.PurplePrimary
 import com.example.etherealartefacts.ui.theme.White
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@Destination
 @Composable
-fun ProductsScreen(navController: NavController, productId: Int) {
+fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator) {
     val productsViewModel: ProductDetailsViewModel = hiltViewModel()
     val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
@@ -112,7 +111,7 @@ fun ProductsScreen(navController: NavController, productId: Int) {
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*To be implemented with homework 2-2 (home screen)*/ }) {
+                    IconButton(onClick = { destinationsNavigator.navigateUp() }) {
                         Icon(Icons.Filled.ArrowBack, null)
                     }
                 }

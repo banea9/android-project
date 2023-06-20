@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.LoginRequest
+import com.example.etherealartefacts.ui.NavGraphs
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.DefaultTextField
 import com.example.etherealartefacts.ui.theme.ErrorTextField
@@ -54,10 +55,21 @@ import com.example.etherealartefacts.ui.theme.FocusedTextField
 import com.example.etherealartefacts.ui.theme.InactivePrimary
 import com.example.etherealartefacts.ui.theme.PurplePrimary
 import com.example.etherealartefacts.utils.showErrorNotification
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@RootNavGraph(start = true)
+@NavGraph
+annotation class LoginNavGraph(
+    val start: Boolean = false
+)
 
+@LoginNavGraph(start = true)
+@Destination
 @Composable
-fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
+fun LoginScreen(destinationsNavigator: DestinationsNavigator) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var password by remember { mutableStateOf("") }
@@ -74,7 +86,7 @@ fun LoginScreen(navigateToDetailsScreen: () -> Unit = {}) {
     val errText = stringResource(id = R.string.login_error)
     LaunchedEffect(errorOccurred) {
         if(errorOccurred == false) {
-            navigateToDetailsScreen()
+            destinationsNavigator.navigate(NavGraphs.home)
         }
 
         if(errorOccurred == true && !showedErrNotification) {

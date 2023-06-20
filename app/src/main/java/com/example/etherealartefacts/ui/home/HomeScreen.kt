@@ -1,5 +1,7 @@
 package com.example.etherealartefacts.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,38 +37,77 @@ import com.example.etherealartefacts.R
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.utils.showErrorNotification
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.dp
+import com.example.etherealartefacts.ui.destinations.ProductsScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
+import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
+import com.example.etherealartefacts.ui.theme.PurplePrimary
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
+@RootNavGraph
+@NavGraph
+annotation class HomeNavGraph(
+    val start: Boolean = false
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@HomeNavGraph(start = true)
+@Destination
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val filterCriteria by homeViewModel.filterCriteria.collectAsState()
     val displayedProducts by homeViewModel.displayedProducts.collectAsState()
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
+    val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
+    val iconSizeMedium = dimensionResource(id = R.dimen.icon_size_medium)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
     val backgroundImg = painterResource(id = R.drawable.background_pd)
     val errorOccurred by homeViewModel.errorOccurred.collectAsState()
     val errText = stringResource(id = R.string.error_fetching)
     var showedFetchErr by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val sheetCoroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(errorOccurred) {
         if (errorOccurred == true && !showedFetchErr) {
@@ -167,6 +208,11 @@ fun HomeScreen(navController: NavController) {
                         Modifier
                             .width(dimensionResource(id = R.dimen.filter_icon_height))
                             .height(dimensionResource(id = R.dimen.filter_icon_width))
+                            .clickable {
+                                sheetCoroutineScope.launch {
+                                    sheetState.show()
+                                }
+                            }
                     )
                 }
                 LazyColumn(
@@ -188,7 +234,7 @@ fun HomeScreen(navController: NavController) {
                                     )
                                 }
                                 .clickable {
-                                    navController.navigate("detailsScreen/${product.id}")
+                                    destinationsNavigator.navigate(ProductsScreenDestination(product.id))
                                 }, horizontalArrangement = Arrangement.Start
                         ) {
                             Image(
@@ -197,7 +243,7 @@ fun HomeScreen(navController: NavController) {
                                 modifier = Modifier
                                     .height(dimensionResource(id = R.dimen.home_img_size))
                                     .width(dimensionResource(id = R.dimen.home_img_size))
-                                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                                    .padding(bottom = paddingMedium)
                             )
                             Column(
                                 modifier = Modifier
@@ -261,6 +307,238 @@ fun HomeScreen(navController: NavController) {
                 }
             }
         }
+        if (sheetState.isVisible) {
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxSize(),
+                onDismissRequest = {
+                    sheetCoroutineScope.launch {
+                        sheetState.hide()
+                    }
+                },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = horPadding)
+                ) {
+                    val defaultRatings = 4
+                    var range by remember { mutableStateOf(35f..150f) }
+                    var ratingState by remember { mutableIntStateOf(defaultRatings) }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row {
+                            Icon(
+                                Icons.Default.Close, "",
+                                modifier = Modifier
+                                    .height(iconSizeMedium)
+                                    .width(iconSizeMedium)
+                                    .padding(end = paddingMedium)
+                                    .clickable {
+                                        sheetCoroutineScope.launch {
+                                            sheetState.hide()
+                                        }
+                                    },
+                            )
+                            Text(text = stringResource(id = R.string.filters_title))
+                        }
+                        Text(
+                            text = stringResource(id = R.string.save_btn),
+                            color = PurpleIcon,
+                            modifier = Modifier.clickable {
+                                println("Clicked")
+                            })
+
+                    }
+                    CategoriesAccordion()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = dimensionResource(
+                                    id = R.dimen.padding_large
+                                )
+                            )
+                            .drawBehind {
+                                val strokeWidth = 1.dp.toPx()
+                                val startY = 0f
+                                val endY = size.height
+
+                                drawLine(
+                                    color = BorderGray,
+                                    start = Offset(0f, startY),
+                                    end = Offset(size.width, startY),
+                                    strokeWidth = strokeWidth
+                                )
+                                drawLine(
+                                    color = BorderGray,
+                                    start = Offset(0f, endY),
+                                    end = Offset(size.width, endY),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = paddingMedium),
+                            text = stringResource(
+                                id =
+                                R.string.price_subtitle
+                            ),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        RangeSlider(
+                            value = range,
+                            onValueChange = {
+                                range =
+                                    it.start.roundToInt().toFloat()..it.endInclusive.roundToInt()
+                                        .toFloat()
+                            },
+                            valueRange = 0f..200f,
+                            colors = SliderDefaults.colors(
+                                activeTrackColor = PurpleIcon,
+                                thumbColor = PurpleIcon,
+                            )
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = dimensionResource(id = R.dimen.padding_small),
+                                    bottom = paddingMedium
+                                ),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "${stringResource(id = R.string.price_sign)}${range.start}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "${stringResource(id = R.string.price_sign)}${range.endInclusive}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                    Column {
+                        Text(
+                            modifier = Modifier.padding(vertical = paddingMedium),
+                            text = stringResource(
+                                id = R.string.product_subtitle
+                            )
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            repeat(5) { index ->
+                                Icon(
+                                    Icons.Default.Star,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .height(horPadding)
+                                        .width(horPadding)
+                                        .clickable {
+                                            println(index + 1)
+                                            ratingState = index + 1
+                                        },
+                                    tint = if (index <= ratingState - 1) PurpleIcon else GrayIcon
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoriesAccordion() {
+    val iconSizeMedium = dimensionResource(id = R.dimen.icon_size_medium)
+    val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
+    var expanded by remember { mutableStateOf(false) }
+    val options = listOf("All Categories", "Books", "Gemstones", "Home", "Jewellery")
+
+    val rotateState = animateFloatAsState(
+        targetValue = if (expanded) 180F else 0F,
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = dimensionResource(id = R.dimen.padding_large))
+    ) {
+
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Transparent,
+                contentColor = Black,
+                disabledContainerColor = BorderGray,
+                disabledContentColor = BorderGray,
+            ),
+            shape = RectangleShape,
+            onClick = { expanded = !expanded })        {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.category_subtitle),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(id = R.string.category_default_option),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Icon(
+                    Icons.Default.ArrowDropDown, "",
+                    modifier = Modifier
+                        .rotate(rotateState.value)
+                        .height(iconSizeMedium)
+                        .width(iconSizeMedium),
+                    tint = Black
+                )
+            }
+        }
+
+        AnimatedVisibility(
+            visible = expanded,
+        ) {
+            // TODO your choice of what you want to have here
+            Column(modifier = Modifier.fillMaxWidth()) {
+                repeat(options.count()) { index ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = options[index],
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = paddingMedium)
+                        )
+                        Checkbox(
+                            checked = index == 0,
+                            onCheckedChange = null,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color.Transparent,
+                                uncheckedColor = Color.Transparent,
+                                checkmarkColor = PurplePrimary
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

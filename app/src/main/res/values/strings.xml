@@ -18,5 +18,12 @@
     <string name="search_placeholder">Search</string>
     <string name="home_subtitle">New products</string>
     <string name="error_fetching">Error while fetching data</string>
+    //Filter bottom sheet
+    <string name="filters_title">Filters</string>
+    <string name="save_btn">Save</string>
+    <string name="category_subtitle">Category</string>
+    <string name="category_default_option">All Categories</string>
+    <string name="price_subtitle">Price range</string>
+    <string name="product_subtitle">Product rating</string>
 
 </resources>
