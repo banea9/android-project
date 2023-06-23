@@ -13,7 +13,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
+data class CategoryOption(
+    val name: String,
+    val isChecked: Boolean,
+)
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -35,6 +40,18 @@ class HomeViewModel @Inject constructor(
     private val _filterCriteria = MutableStateFlow("")
     val filterCriteria: StateFlow<String> = _filterCriteria
 
+    private val _defaultStarRating = MutableStateFlow(4)
+    private val defaultStarRating: StateFlow<Int> = _defaultStarRating
+
+    private val _filterStarRating = MutableStateFlow(0)
+    private val filterStarRating: StateFlow<Int> = _filterStarRating
+
+    private val _defaultRange = MutableStateFlow(35f..150f)
+    private val defaultRange: StateFlow<ClosedFloatingPointRange<Float>> = _defaultRange
+    private val _filteredRange = MutableStateFlow(0f..200f)
+    private val filteredRange: StateFlow<ClosedFloatingPointRange<Float>> = _filteredRange
+
+
     // Custom getter
     val displayedProducts: StateFlow<List<ProductDetailsModel>> = combine(
         filterCriteria,
@@ -48,6 +65,35 @@ class HomeViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
+    val displayedRating: StateFlow<Int> = combine(
+        defaultStarRating, filterStarRating
+    ) { default, filtered ->
+        if (filtered != 0) {
+            filtered
+        } else {
+            default
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    val displayedRange: StateFlow<ClosedFloatingPointRange<Float>> = combine(
+        defaultRange, filteredRange
+    ) { default, filtered ->
+        if (filtered != 0f..200f) {
+            filtered
+        } else {
+            default
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0f..200f)
+
+
+    fun onRatingChange(starRating: Int) {
+        _filterStarRating.value = starRating
+    }
+
+    fun onRangeChange(range: ClosedFloatingPointRange<Float>) {
+        _defaultRange.value =
+            range.start.roundToInt().toFloat()..range.endInclusive.roundToInt().toFloat()
+    }
 
     fun onChange(value: String) {
         _filterCriteria.value = value
