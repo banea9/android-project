@@ -22,10 +22,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -39,7 +35,6 @@ import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,11 +68,12 @@ fun HomeFilter(sheetState: SheetState, sheetCoroutineScope: CoroutineScope) {
                 Row {
                     Icon(
                         Icons.Default.Close, "",
-                        modifier = androidx.compose.ui.Modifier
+                        modifier = Modifier
                             .height(iconSizeMedium)
                             .width(iconSizeMedium)
                             .padding(end = paddingMedium)
                             .clickable {
+                                homeViewModel.resetFilter()
                                 sheetCoroutineScope.launch {
                                     sheetState.hide()
                                 }
@@ -89,7 +85,10 @@ fun HomeFilter(sheetState: SheetState, sheetCoroutineScope: CoroutineScope) {
                     text = stringResource(id = R.string.save_btn),
                     color = PurpleIcon,
                     modifier = Modifier.clickable {
-                        println("Clicked")
+                        sheetCoroutineScope.launch {
+                            sheetState.hide()
+                        }
+                        homeViewModel.filterProducts()
                     })
 
             }

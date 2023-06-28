@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.ui.theme.Black
 import com.example.etherealartefacts.ui.theme.BorderGray
@@ -42,8 +43,7 @@ fun CategoriesAccordion() {
     val iconSizeMedium = dimensionResource(id = R.dimen.icon_size_medium)
     val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     var expanded by remember { mutableStateOf(false) }
-    val options = listOf("All Categories", "Books", "Gemstones", "Home", "Jewellery")
-
+    val homeViewModel : HomeViewModel = hiltViewModel()
     val rotateState = animateFloatAsState(
         targetValue = if (expanded) 180F else 0F,
     )
@@ -97,21 +97,21 @@ fun CategoriesAccordion() {
         ) {
             // TODO your choice of what you want to have here
             Column(modifier = Modifier.fillMaxWidth()) {
-                repeat(options.count()) { index ->
+                homeViewModel.options.forEachIndexed { index, option ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = options[index],
+                            text = option.name,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(start = paddingMedium)
                         )
                         Checkbox(
-                            checked = index == 0,
-                            onCheckedChange = {
-                                println("IT: $it")
+                            checked = option.isChecked,
+                            onCheckedChange = {isChecked ->
+                               homeViewModel.updateOption(index, isChecked)
                             },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color.Transparent,
