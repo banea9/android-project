@@ -50,6 +50,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
+import com.example.etherealartefacts.models.CartItem
+import com.example.etherealartefacts.ui.cart.CartViewModel
+import com.example.etherealartefacts.ui.destinations.CardScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.theme.GreenIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
@@ -62,6 +65,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator) {
     val productsViewModel: ProductDetailsViewModel = hiltViewModel()
+    val cartViewModel: CartViewModel = hiltViewModel()
     val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     var showedFetchErr by remember { mutableStateOf(false) }
@@ -77,7 +81,7 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
     }
 
     LaunchedEffect(errorOccurred) {
-        if(errorOccurred == true && !showedFetchErr) {
+        if (errorOccurred == true && !showedFetchErr) {
             showedFetchErr = true
             showErrorNotification(context, errText)
         }
@@ -104,7 +108,7 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                 }, actions = {
                     Box(modifier = Modifier
                         .clickable {
-                            /* To be implemented with cart functionality */
+                            destinationsNavigator.navigate(CardScreenDestination())
                         }
                     ) {
                         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
@@ -246,7 +250,15 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                                 )
                             )
                             Button(
-                                onClick = { /* to do when functionality is needed */ },
+                                onClick = {
+                                    val cartItem = CartItem(
+                                        product.title,
+                                        product.image,
+                                        product.price,
+                                        1
+                                    )
+                                    cartViewModel.addCartItem(cartItem)
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = PurplePrimary, contentColor = White
                                 ),

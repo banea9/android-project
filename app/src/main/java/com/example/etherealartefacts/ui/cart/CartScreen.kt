@@ -11,38 +11,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import coil.compose.rememberAsyncImagePainter
 import com.example.etherealartefacts.R
-import com.example.etherealartefacts.ui.theme.PurpleIcon
-import com.example.etherealartefacts.utils.showErrorNotification
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
@@ -50,25 +36,24 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import com.example.etherealartefacts.ui.cart.CartViewModel
 import com.example.etherealartefacts.ui.shared.AppBar
-import com.example.etherealartefacts.ui.shared.SearchField
 import com.example.etherealartefacts.ui.theme.BorderGray
-import com.example.etherealartefacts.ui.theme.GrayIcon
-import com.example.etherealartefacts.ui.theme.GrayText
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
 @Composable
-fun CardScreen(navController: NavController) {
-    val context = LocalContext.current
+fun CardScreen() {
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
+    val cartViewModel: CartViewModel = hiltViewModel()
+    val cartItems by cartViewModel.cartItems.collectAsState()
     val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
     val backgroundImg = painterResource(id = R.drawable.background_pd)
-    val logo = painterResource(id = R.drawable.logo)
-
+    println("$cartItems")
     Scaffold(
         topBar = {
             AppBar(
@@ -138,110 +123,64 @@ fun CardScreen(navController: NavController) {
                     .padding(horizontal = horPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                cartItems.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = paddingMedium)
+                            .drawBehind {
+                                drawLine(
+                                    color = BorderGray,
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = borderWidth.toPx()
+                                )
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row {
+                            Image(
+                                painter = rememberAsyncImagePainter(model = item.image),
+                                contentDescription = "Logo",
+                                modifier = Modifier
+                                    .width(56.dp)
+                                    .height(56.dp)
+                            )
+                            Column(modifier = Modifier.padding(start = iconSizeSmall)) {
+                                Text(
+                                    text = "Solar neshto si",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "${stringResource(id = R.string.price_sign)}20${
+                                        stringResource(
+                                            id = R.string.price_suffix
+                                        )
+                                    }",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "${stringResource(id = R.string.cart_item_quantity)} 1",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(paddingMedium)
+                                .height(paddingMedium)
+                                .clickable { println("Deleting") }
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(vertical = paddingMedium)
-                        .drawBehind {
-                            drawLine(
-                                color = BorderGray,
-                                start = Offset(0f, size.height),
-                                end = Offset(size.width, size.height),
-                                strokeWidth = borderWidth.toPx()
-                            )
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row {
-                        Image(
-                            painter = logo,
-                            contentDescription = "Logo",
-                            modifier = Modifier
-                                .width(56.dp)
-                                .height(56.dp)
-                        )
-                        Column(modifier = Modifier.padding(start = iconSizeSmall)) {
-                            Text(
-                                text = "Solar neshto si",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "${stringResource(id = R.string.price_sign)}20${
-                                    stringResource(
-                                        id = R.string.price_suffix
-                                    )
-                                }",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "${stringResource(id = R.string.cart_item_quantity)} 1",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(paddingMedium)
-                            .height(paddingMedium)
-                            .clickable { println("Deleting") }
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = paddingMedium)
-                        .drawBehind {
-                            drawLine(
-                                color = BorderGray,
-                                start = Offset(0f, size.height),
-                                end = Offset(size.width, size.height),
-                                strokeWidth = borderWidth.toPx()
-                            )
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row {
-                        Image(
-                            painter = logo,
-                            contentDescription = "Logo",
-                            modifier = Modifier
-                                .width(56.dp)
-                                .height(56.dp)
-                        )
-                        Column(modifier = Modifier.padding(start = iconSizeSmall)) {
-                            Text(
-                                text = "Solar neshto si",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "${stringResource(id = R.string.price_sign)}20${
-                                    stringResource(
-                                        id = R.string.price_suffix
-                                    )
-                                }",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "${stringResource(id = R.string.cart_item_quantity)} 1",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(paddingMedium)
-                            .height(paddingMedium)
-                            .clickable { println("Deleting") }
-                    )
-                }
-                Row(
-                    modifier = Modifier.padding(vertical = paddingMedium).fillMaxWidth(),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
