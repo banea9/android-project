@@ -151,9 +151,6 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                             modifier = Modifier
                                 .height(dimensionResource(id = R.dimen.home_cart_icon))
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
-                                .clickable {
-//                                    destinationsNavigator.navigate(CardScreenDestination)
-                                }
                         )
                     }
                 },

@@ -200,10 +200,8 @@ class HomeViewModel @Inject constructor(
             val matchRating =
                 product.rating == if (_isRatingChanged.value) _filterStarRating.value else _defaultStarRating.value
             val category = _options.find { o -> o.name == product.category }
-            println("${category!!.isChecked}")
-            println("$category")
-            println("${category.isChecked}")
-            val matchCategory = if (_areCategoriesUpdated.value) category?.isChecked ?: false else true
+
+            val matchCategory = _areCategoriesUpdated.value && category?.isChecked == true
 
 
 
@@ -219,7 +217,7 @@ class HomeViewModel @Inject constructor(
                 product.price.toFloat() <= _filteredRange.value.endInclusive
             }
 
-            matchTitle && matchRating && startPrice && endPrice
+            matchTitle && matchRating && startPrice && endPrice && matchCategory
         }
         _filteredProducts.value = filteredList
     }
