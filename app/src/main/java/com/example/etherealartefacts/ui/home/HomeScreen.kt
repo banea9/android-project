@@ -54,7 +54,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-//import com.example.etherealartefacts.ui.destinations.CardScreenDestination
 import com.example.etherealartefacts.ui.destinations.ProductsScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
@@ -207,7 +206,12 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                     }
                 }
 
-                Box(modifier = Modifier.offset(165.dp, (-60).dp)) {
+                Box(
+                    modifier = Modifier.offset(
+                        dimensionResource(id = R.dimen.filter_icon_offset_x),
+                        dimensionResource(id = R.dimen.filter_icon_offset_y)
+                    )
+                ) {
                     Box(
                         modifier = Modifier
                             .size(20.dp)
