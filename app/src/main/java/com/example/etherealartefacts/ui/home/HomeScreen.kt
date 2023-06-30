@@ -1,6 +1,7 @@
 package com.example.etherealartefacts.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -35,10 +38,14 @@ import com.example.etherealartefacts.R
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 import com.example.etherealartefacts.utils.showErrorNotification
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -46,27 +53,48 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.dp
+import com.example.etherealartefacts.ui.destinations.ProductsScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
 import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
+import com.example.etherealartefacts.ui.theme.White
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 
+@RootNavGraph
+@NavGraph
+annotation class HomeNavGraph(
+    val start: Boolean = false
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@HomeNavGraph(start = true)
+@Destination
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val filterCriteria by homeViewModel.filterCriteria.collectAsState()
     val displayedProducts by homeViewModel.displayedProducts.collectAsState()
+    val filterCount by homeViewModel.filterCount.collectAsState()
     val context = LocalContext.current
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
+    val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
     val borderWidth = dimensionResource(id = R.dimen.border_width)
     val backgroundImg = painterResource(id = R.drawable.background_pd)
     val errorOccurred by homeViewModel.errorOccurred.collectAsState()
     val errText = stringResource(id = R.string.error_fetching)
     var showedFetchErr by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val sheetCoroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(errorOccurred) {
         if (errorOccurred == true && !showedFetchErr) {
@@ -167,7 +195,33 @@ fun HomeScreen(navController: NavController) {
                         Modifier
                             .width(dimensionResource(id = R.dimen.filter_icon_height))
                             .height(dimensionResource(id = R.dimen.filter_icon_width))
+                            .clickable {
+                                sheetCoroutineScope.launch {
+                                    sheetState.show()
+                                }
+                            }
                     )
+                }
+
+                Box(
+                    modifier = Modifier.offset(
+                        dimensionResource(id = R.dimen.filter_icon_offset_x),
+                        dimensionResource(id = R.dimen.filter_icon_offset_y)
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(dimensionResource(id = R.dimen.text_box_padding))
+                            .background(PurpleIcon, shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "$filterCount",
+                            color = White,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(2.dp)
+                        )
+                    }
                 }
                 LazyColumn(
                     modifier = Modifier
@@ -188,7 +242,7 @@ fun HomeScreen(navController: NavController) {
                                     )
                                 }
                                 .clickable {
-                                    navController.navigate("detailsScreen/${product.id}")
+                                    destinationsNavigator.navigate(ProductsScreenDestination(product.id))
                                 }, horizontalArrangement = Arrangement.Start
                         ) {
                             Image(
@@ -197,7 +251,7 @@ fun HomeScreen(navController: NavController) {
                                 modifier = Modifier
                                     .height(dimensionResource(id = R.dimen.home_img_size))
                                     .width(dimensionResource(id = R.dimen.home_img_size))
-                                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                                    .padding(bottom = paddingMedium)
                             )
                             Column(
                                 modifier = Modifier
@@ -260,6 +314,9 @@ fun HomeScreen(navController: NavController) {
                     }
                 }
             }
+        }
+        if (sheetState.isVisible) {
+            HomeFilter(sheetState, sheetCoroutineScope)
         }
     }
 }
