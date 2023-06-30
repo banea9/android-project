@@ -26,6 +26,9 @@ class HomeViewModel @Inject constructor(
     private val repository: DefaultRepository,
 ) : ViewModel() {
 
+    private val defRange = 35f..150f
+    private val filterRange = 0f..200f
+
     private val _options = mutableStateListOf(
         CategoryOption(name = "All Categories", isChecked = true),
         CategoryOption(name = "Books", isChecked = false),
@@ -55,18 +58,18 @@ class HomeViewModel @Inject constructor(
     private val _filterStarRating = MutableStateFlow(0)
     private val filterStarRating: StateFlow<Int> = _filterStarRating
 
-    private val _defaultRange = MutableStateFlow(35f..150f)
+    private val _defaultRange = MutableStateFlow(defRange)
     private val defaultRange: StateFlow<ClosedFloatingPointRange<Float>> = _defaultRange
 
-    private val _filteredRange = MutableStateFlow(0f..200f)
+    private val _filteredRange = MutableStateFlow(filterRange)
     private val filteredRange: StateFlow<ClosedFloatingPointRange<Float>> = _filteredRange
 
     private var _filterCount = MutableStateFlow(0)
     var filterCount: StateFlow<Int> = _filterCount
 
-    private val _areCategoriesUpdated = MutableStateFlow(false)
-    private val _isRangeChanged = MutableStateFlow(false)
-    private val _isRatingChanged = MutableStateFlow(false)
+    private var areCategoriesUpdated : Boolean = false
+    private var isRangeChanged : Boolean = false
+    private var isRatingChanged : Boolean = false
 
 
     val options: List<CategoryOption>
@@ -75,9 +78,9 @@ class HomeViewModel @Inject constructor(
     fun updateOption(index: Int, isChecked: Boolean) {
         _filterCount.value += 1
 
-        if (_areCategoriesUpdated.value) _filterCount.value -= 1
+        if (areCategoriesUpdated) _filterCount.value -= 1
 
-        _areCategoriesUpdated.value = true
+        areCategoriesUpdated = true
         val updatedOption = _options[index].copy(isChecked = isChecked)
         _options[index] = updatedOption
 
@@ -89,7 +92,7 @@ class HomeViewModel @Inject constructor(
 
         if ((_options[0].isChecked && (!_options[1].isChecked && !_options[2].isChecked && !_options[3].isChecked && !_options[4].isChecked))) {
 
-            _areCategoriesUpdated.value = false
+            areCategoriesUpdated = false
             _filterCount.value -= 1
         }
 
@@ -97,7 +100,7 @@ class HomeViewModel @Inject constructor(
 
     fun resetFilter() {
         _filterStarRating.value = 0
-        _defaultRange.value = 35f..150f
+        _defaultRange.value = defRange
         _options.forEachIndexed { index, _ ->
             val updatedOption = _options[index].copy(isChecked = index == 0)
             _options[index] = updatedOption
@@ -111,7 +114,7 @@ class HomeViewModel @Inject constructor(
         products,
         filteredProducts
     ) { criteria, allProducts, filtered ->
-        if (criteria.isNotEmpty() || _areCategoriesUpdated.value || _isRangeChanged.value || _isRatingChanged.value) {
+        if (criteria.isNotEmpty() || _filterCount.value > 0) {
             filtered
         } else {
             allProducts
@@ -132,20 +135,20 @@ class HomeViewModel @Inject constructor(
     val displayedRange: StateFlow<ClosedFloatingPointRange<Float>> = combine(
         defaultRange, filteredRange
     ) { default, filtered ->
-        if (filtered != 0f..200f) {
+        if (filtered != filterRange) {
             filtered
         } else {
             default
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0f..200f)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), filterRange)
 
 
     fun onRatingChange(starRating: Int) {
         _filterCount.value += 1
-        if (_isRatingChanged.value) _filterCount.value -= 1
-        _isRatingChanged.value = true
+        if (isRatingChanged) _filterCount.value -= 1
+        isRatingChanged = true
         if (starRating == 4) {
-            _isRatingChanged.value = false
+            isRatingChanged = false
             _filterCount.value -= 1
         }
         _filterStarRating.value = starRating
@@ -154,15 +157,14 @@ class HomeViewModel @Inject constructor(
     fun onRangeChange(range: ClosedFloatingPointRange<Float>) {
         _filterCount.value += 1
 
-        if (_isRangeChanged.value) _filterCount.value -= 1
-        _isRangeChanged.value = true
+        if (isRangeChanged) _filterCount.value -= 1
+        isRangeChanged = true
 
-        println("range $range")
-        if (range.start.roundToInt() === 35 && range.endInclusive.roundToInt() === 150) {
-            _isRangeChanged.value = false
+        if (range.start.roundToInt() == 35 && range.endInclusive.roundToInt() == 150) {
+            isRangeChanged = false
             _filterCount.value -= 1
         }
-        _defaultRange.value =
+        _filteredRange.value =
             range.start.roundToInt().toFloat()..range.endInclusive.roundToInt().toFloat()
     }
 
@@ -195,23 +197,23 @@ class HomeViewModel @Inject constructor(
 
     fun filterProducts() {
         val filteredList = products.value.filter { product: ProductDetailsModel ->
-            val matchTitle = product.title.contains(_filterCriteria.value, ignoreCase = true);
+            val matchTitle = product.title.contains(_filterCriteria.value, ignoreCase = true)
 
             val matchRating =
-                product.rating == if (_isRatingChanged.value) _filterStarRating.value else _defaultStarRating.value
+                product.rating == if (isRatingChanged) _filterStarRating.value else _defaultStarRating.value
             val category = _options.find { o -> o.name == product.category }
 
-            val matchCategory = _areCategoriesUpdated.value && category?.isChecked == true
+            val matchCategory = areCategoriesUpdated && category?.isChecked == true
 
 
 
-            val startPrice: Boolean = if (_isRangeChanged.value) {
+            val startPrice: Boolean = if (isRangeChanged) {
                 product.price.toFloat() >= _defaultRange.value.start
             } else {
                 product.price.toFloat() >= _filteredRange.value.start
             }
 
-            val endPrice: Boolean = if (_isRangeChanged.value) {
+            val endPrice: Boolean = if (isRangeChanged) {
                 product.price.toFloat() <= _defaultRange.value.endInclusive
             } else {
                 product.price.toFloat() <= _filteredRange.value.endInclusive

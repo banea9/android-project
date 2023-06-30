@@ -189,21 +189,18 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                         text = stringResource(id = R.string.home_subtitle),
                         style = MaterialTheme.typography.titleSmall
                     )
-                    Box {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = null,
-                            Modifier
-                                .width(dimensionResource(id = R.dimen.filter_icon_height))
-                                .height(dimensionResource(id = R.dimen.filter_icon_width))
-                                .clickable {
-                                    sheetCoroutineScope.launch {
-                                        sheetState.show()
-                                    }
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = null,
+                        Modifier
+                            .width(dimensionResource(id = R.dimen.filter_icon_height))
+                            .height(dimensionResource(id = R.dimen.filter_icon_width))
+                            .clickable {
+                                sheetCoroutineScope.launch {
+                                    sheetState.show()
                                 }
-                        )
-
-                    }
+                            }
+                    )
                 }
 
                 Box(
@@ -214,7 +211,7 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(dimensionResource(id = R.dimen.text_box_padding))
                             .background(PurpleIcon, shape = CircleShape),
                         contentAlignment = Alignment.Center
                     ) {

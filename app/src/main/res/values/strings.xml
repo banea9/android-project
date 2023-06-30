@@ -25,5 +25,10 @@
     <string name="category_default_option">All Categories</string>
     <string name="price_subtitle">Price range</string>
     <string name="product_subtitle">Product rating</string>
+    <string name="category_option_all">All Categories</string>
+    <string name="category_option_books">Books</string>
+    <string name="category_option_gemstones">Gemstones</string>
+    <string name="category_option_home">Home</string>
+    <string name="category_option_jewellery">Jewellery</string>
 
 </resources>
