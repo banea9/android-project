@@ -20,8 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.CartItem
 
@@ -29,7 +29,6 @@ import com.example.etherealartefacts.models.CartItem
 fun CartItems(item: CartItem) {
     val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val iconSizeSmall = dimensionResource(id = R.dimen.icon_size_small)
-    val cartViewModel: CartViewModel = hiltViewModel()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +46,7 @@ fun CartItems(item: CartItem) {
             )
             Column(modifier = Modifier.padding(start = iconSizeSmall)) {
                 Text(
-                    text = "Solar neshto si",
+                    text = item.name,
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
@@ -70,7 +69,7 @@ fun CartItems(item: CartItem) {
             modifier = Modifier
                 .width(paddingMedium)
                 .height(paddingMedium)
-                .clickable { cartViewModel.removeItem(item.name) }
+                .clickable { CartState.removeProduct(item.id) }
         )
     }
     Divider()

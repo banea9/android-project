@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,10 +50,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.CartItem
-import com.example.etherealartefacts.ui.cart.CartViewModel
 import com.example.etherealartefacts.ui.destinations.CardScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.theme.GreenIcon
@@ -65,7 +67,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator) {
     val productsViewModel: ProductDetailsViewModel = hiltViewModel()
-    val cartViewModel: CartViewModel = hiltViewModel()
     val products by productsViewModel.products.collectAsState()
     val isLoading by productsViewModel.isLoading.collectAsState()
     var showedFetchErr by remember { mutableStateOf(false) }
@@ -111,7 +112,30 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                             destinationsNavigator.navigate(CardScreenDestination())
                         }
                     ) {
+                        val cartItemsCount = CartState.cartItems.size
                         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
+                        if(cartItemsCount != 0) {
+                            Box(
+                                modifier = Modifier.offset(
+                                    dimensionResource(id = R.dimen.top_app_bar_hor_padding),
+                                    -dimensionResource(id = R.dimen.text_border_radius)
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(dimensionResource(id = R.dimen.text_box_padding))
+                                        .background(color = PurpleIcon, CircleShape)
+                                        .align(Alignment.TopEnd)
+                                ) {
+                                    Text(
+                                        text = cartItemsCount.toString(),
+                                        color = White,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 navigationIcon = {
@@ -252,12 +276,13 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                             Button(
                                 onClick = {
                                     val cartItem = CartItem(
+                                        product.id,
                                         product.title,
                                         product.image,
                                         product.price,
                                         1
                                     )
-                                    cartViewModel.addCartItem(cartItem)
+                                    CartState.addProduct(cartItem)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = PurplePrimary, contentColor = White

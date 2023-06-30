@@ -1,7 +1,6 @@
 package com.example.etherealartefacts.ui.cart
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,20 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.example.etherealartefacts.R
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.etherealartefacts.ui.destinations.HomeScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.theme.PurplePrimary
@@ -44,18 +38,16 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.ui.text.style.TextAlign
+import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.ui.theme.PurpleIcon
 
 @Destination
 @Composable
 fun CardScreen(destinationsNavigator: DestinationsNavigator) {
     val horPadding = dimensionResource(id = R.dimen.hor_padding)
-    val cartViewModel: CartViewModel = hiltViewModel()
-    val cartItems by cartViewModel.cartItems.collectAsState()
     val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val topAppBarPadding = dimensionResource(id = R.dimen.top_app_bar_hor_padding)
     val backgroundImg = painterResource(id = R.drawable.background_pd)
-    println("$cartItems")
     Scaffold(
         topBar = {
             AppBar(
@@ -71,34 +63,6 @@ fun CardScreen(destinationsNavigator: DestinationsNavigator) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                },
-                actions = {
-                    Box(modifier = Modifier
-                        .clickable {
-                            /* To be implemented with cart functionality */
-                        }
-                        .padding(end = dimensionResource(id = R.dimen.login_padding_bottom))
-                    ) {
-                        Icon(
-                            Icons.Outlined.AccountCircle,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .height(dimensionResource(id = R.dimen.home_profile_icon))
-                                .width(dimensionResource(id = R.dimen.home_profile_icon))
-                        )
-                    }
-                    Box(modifier = Modifier
-                        .clickable {
-                            /* To be implemented with cart functionality */
-                        }
-                    ) {
-                        Icon(
-                            Icons.Outlined.ShoppingCart, contentDescription = null,
-                            modifier = Modifier
-                                .height(dimensionResource(id = R.dimen.home_cart_icon))
-                                .width(dimensionResource(id = R.dimen.home_cart_icon))
-                        )
-                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { }) {
@@ -126,11 +90,11 @@ fun CardScreen(destinationsNavigator: DestinationsNavigator) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Box {
-                    cartItems.forEach { item ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    CartState.cartItems.map { item ->
                         CartItems(item)
                     }
-                    if (cartItems.isNotEmpty()) {
+                    if (CartState.cartItems.isNotEmpty()) {
                         Row(
                             modifier = Modifier
                                 .padding(vertical = paddingMedium)
@@ -138,11 +102,11 @@ fun CardScreen(destinationsNavigator: DestinationsNavigator) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "${stringResource(id = R.string.cart_items_count)} ${cartItems.count()}",
+                                text = "${stringResource(id = R.string.cart_items_count)} ${CartState.cartItems.count()}",
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "${stringResource(id = R.string.cart_items_total_price)}${cartViewModel.getTotalPrice()}${
+                                text = "${stringResource(id = R.string.cart_items_total_price)}${CartState.getTotalPrice()}${
                                     stringResource(
                                         id = R.string.price_suffix
                                     )
@@ -153,9 +117,10 @@ fun CardScreen(destinationsNavigator: DestinationsNavigator) {
                     }
 
                 }
-                if (cartItems.isNotEmpty()) {
+                if (CartState.cartItems.isNotEmpty()) {
                     Button(
                         onClick = {
+                            CartState.placeOrder()
                             destinationsNavigator.navigate(HomeScreenDestination)
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -183,7 +148,7 @@ fun CardScreen(destinationsNavigator: DestinationsNavigator) {
                 }
             }
 
-            if (cartItems.isEmpty()) {
+            if (CartState.cartItems.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .padding(horPadding)

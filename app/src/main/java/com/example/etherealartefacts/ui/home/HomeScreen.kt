@@ -53,7 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.ui.destinations.ProductsScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
@@ -148,33 +148,35 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                             destinationsNavigator.navigate(CardScreenDestination)
                         }
                     ) {
+                        val cartItemsCount = CartState.cartItems.size
                         Icon(
                             Icons.Outlined.ShoppingCart, contentDescription = null,
                             modifier = Modifier
                                 .height(dimensionResource(id = R.dimen.home_cart_icon))
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
                         )
-//
-//                        Box(
-//                            modifier = Modifier.offset(
-//                                30.dp,
-//                                30.dp
-//                            )
-//                        ) {
-//                            Box(
-//                                modifier = Modifier
-//                                    .size(20.dp)
-//                                    .background(PurpleIcon, shape = CircleShape),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                Text(
-//                                    text = "2",
-//                                    color = White,
-//                                    style = MaterialTheme.typography.bodySmall,
-//                                    modifier = Modifier.padding(2.dp)
-//                                )
-//                            }
-//                        }
+                        if(cartItemsCount != 0) {
+                            Box(
+                                modifier = Modifier.offset(
+                                    dimensionResource(id = R.dimen.top_app_bar_hor_padding),
+                                    -dimensionResource(id = R.dimen.text_border_radius)
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(dimensionResource(id = R.dimen.text_box_padding))
+                                        .background(color = PurpleIcon, CircleShape)
+                                        .align(Alignment.TopEnd)
+                                ) {
+                                    Text(
+                                        text = cartItemsCount.toString(),
+                                        color = White,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 navigationIcon = {}
@@ -243,7 +245,7 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                             text = "$filterCount",
                             color = White,
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(2.dp)
+                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_extra_small))
                         )
                     }
                 }
