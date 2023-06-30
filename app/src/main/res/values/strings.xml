@@ -35,5 +35,6 @@
     <string name="cart_item_quantity">Quantity: </string>
     <string name="cart_items_count">Items: </string>
     <string name="cart_items_total_price">Total: </string>
+    <string name="check_out_btn">Check out </string>
 
 </resources>

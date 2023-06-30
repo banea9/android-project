@@ -113,11 +113,13 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             AppBar(
-                modifier = Modifier.padding(
-                    start = horPadding, end = horPadding, bottom = dimensionResource(
-                        id = R.dimen.btn_top_padding
-                    )
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = horPadding, end = horPadding, bottom = dimensionResource(
+                            id = R.dimen.btn_top_padding
+                        )
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.home_page_title),
@@ -152,6 +154,27 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                                 .height(dimensionResource(id = R.dimen.home_cart_icon))
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
                         )
+//
+//                        Box(
+//                            modifier = Modifier.offset(
+//                                30.dp,
+//                                30.dp
+//                            )
+//                        ) {
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(20.dp)
+//                                    .background(PurpleIcon, shape = CircleShape),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                Text(
+//                                    text = "2",
+//                                    color = White,
+//                                    style = MaterialTheme.typography.bodySmall,
+//                                    modifier = Modifier.padding(2.dp)
+//                                )
+//                            }
+//                        }
                     }
                 },
                 navigationIcon = {}
