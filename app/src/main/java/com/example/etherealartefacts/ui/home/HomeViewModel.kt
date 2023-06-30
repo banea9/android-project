@@ -76,9 +76,7 @@ class HomeViewModel @Inject constructor(
         get() = _options
 
     fun updateOption(index: Int, isChecked: Boolean) {
-        _filterCount.value += 1
-
-        if (areCategoriesUpdated) _filterCount.value -= 1
+        if (!areCategoriesUpdated) _filterCount.value += 1
 
         areCategoriesUpdated = true
         val updatedOption = _options[index].copy(isChecked = isChecked)
@@ -90,7 +88,9 @@ class HomeViewModel @Inject constructor(
 
         }
 
-        if ((_options[0].isChecked && (!_options[1].isChecked && !_options[2].isChecked && !_options[3].isChecked && !_options[4].isChecked))) {
+        val allUncheckedExceptFirst = _options.drop(1).all { !it.isChecked }
+
+        if (_options[0].isChecked && allUncheckedExceptFirst) {
 
             areCategoriesUpdated = false
             _filterCount.value -= 1
@@ -144,8 +144,7 @@ class HomeViewModel @Inject constructor(
 
 
     fun onRatingChange(starRating: Int) {
-        _filterCount.value += 1
-        if (isRatingChanged) _filterCount.value -= 1
+        if (!isRatingChanged) _filterCount.value += 1
         isRatingChanged = true
         if (starRating == 4) {
             isRatingChanged = false
@@ -155,9 +154,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onRangeChange(range: ClosedFloatingPointRange<Float>) {
-        _filterCount.value += 1
-
-        if (isRangeChanged) _filterCount.value -= 1
+        if (!isRangeChanged) _filterCount.value += 1
         isRangeChanged = true
 
         if (range.start.roundToInt() == 35 && range.endInclusive.roundToInt() == 150) {
