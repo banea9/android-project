@@ -20,20 +20,24 @@ class CartViewModel @Inject constructor() : ViewModel() {
         if (itemIndex != -1) {
             _cartItems.value[itemIndex].quantity++
         } else {
-            _cartItems.value = _cartItems.value.toMutableList().apply {
-                add(CartItem(
-                    name = cartItem.name,
-                    price = cartItem.price,
-                    image = cartItem.image,
-                    quantity = 1
-                ))
-            }
+            val newList = ArrayList(_cartItems.value)
+            newList.add(cartItem)
+
+            _cartItems.value = newList
         }
+        println("cart: ${_cartItems.value} ${getTotalPrice()}")
     }
 
     fun removeItem(name: String) {
         val updatedList = _cartItems.value.filterNot { item -> item.name == name }
         _cartItems.value = updatedList
+    }
+
+    fun getTotalPrice(): Int {
+        return _cartItems.value
+            .fold(0) { acc, cartItem ->
+                acc + (cartItem.price * cartItem.quantity)
+            }
     }
 
 
