@@ -53,7 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.ui.destinations.ProductsScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.shared.SearchField
@@ -61,6 +61,7 @@ import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
 import com.example.etherealartefacts.ui.theme.White
+import com.example.etherealartefacts.ui.destinations.CartScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -112,11 +113,13 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             AppBar(
-                modifier = Modifier.padding(
-                    start = horPadding, end = horPadding, bottom = dimensionResource(
-                        id = R.dimen.btn_top_padding
-                    )
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = horPadding, end = horPadding, bottom = dimensionResource(
+                            id = R.dimen.btn_top_padding
+                        )
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.home_page_title),
@@ -142,15 +145,35 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                     }
                     Box(modifier = Modifier
                         .clickable {
-                            /* To be implemented with cart functionality */
+                            destinationsNavigator.navigate(CartScreenDestination)
                         }
                     ) {
+                        val cartItemsCount = CartState.cartItems.size
                         Icon(
                             Icons.Outlined.ShoppingCart, contentDescription = null,
                             modifier = Modifier
                                 .height(dimensionResource(id = R.dimen.home_cart_icon))
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
                         )
+                        if (cartItemsCount != 0) {
+                            Box(
+                                modifier = Modifier
+                                    .offset(
+                                        dimensionResource(id = R.dimen.padding_extra_small),
+                                        -dimensionResource(id = R.dimen.text_border_radius)
+                                    )
+                                    .size(dimensionResource(id = R.dimen.padding_medium))
+                                    .background(color = PurpleIcon, CircleShape)
+                                    .align(Alignment.TopEnd)
+                            ) {
+                                Text(
+                                    text = cartItemsCount.toString(),
+                                    color = White,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
                     }
                 },
                 navigationIcon = {}
@@ -202,26 +225,21 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                             }
                     )
                 }
-
                 Box(
-                    modifier = Modifier.offset(
-                        dimensionResource(id = R.dimen.filter_icon_offset_x),
-                        dimensionResource(id = R.dimen.filter_icon_offset_y)
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.text_box_padding))
-                            .background(PurpleIcon, shape = CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "$filterCount",
-                            color = White,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(2.dp)
+                    modifier = Modifier
+                        .offset(
+                            dimensionResource(id = R.dimen.filter_icon_offset_x),
+                            dimensionResource(id = R.dimen.filter_icon_offset_y)
                         )
-                    }
+                        .size(dimensionResource(id = R.dimen.padding_medium))
+                        .background(color = PurpleIcon, CircleShape)
+                ) {
+                    Text(
+                        text = "$filterCount",
+                        color = White,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 LazyColumn(
                     modifier = Modifier
