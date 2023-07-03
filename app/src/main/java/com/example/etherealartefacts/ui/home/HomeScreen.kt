@@ -61,7 +61,7 @@ import com.example.etherealartefacts.ui.theme.BorderGray
 import com.example.etherealartefacts.ui.theme.GrayIcon
 import com.example.etherealartefacts.ui.theme.GrayText
 import com.example.etherealartefacts.ui.theme.White
-import com.example.etherealartefacts.ui.destinations.CardScreenDestination
+import com.example.etherealartefacts.ui.destinations.CartScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -145,7 +145,7 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                     }
                     Box(modifier = Modifier
                         .clickable {
-                            destinationsNavigator.navigate(CardScreenDestination)
+                            destinationsNavigator.navigate(CartScreenDestination)
                         }
                     ) {
                         val cartItemsCount = CartState.cartItems.size

@@ -54,7 +54,7 @@ import com.example.etherealartefacts.CartState
 import com.example.etherealartefacts.utils.showErrorNotification
 import com.example.etherealartefacts.R
 import com.example.etherealartefacts.models.CartItem
-import com.example.etherealartefacts.ui.destinations.CardScreenDestination
+import com.example.etherealartefacts.ui.destinations.CartScreenDestination
 import com.example.etherealartefacts.ui.shared.AppBar
 import com.example.etherealartefacts.ui.theme.GreenIcon
 import com.example.etherealartefacts.ui.theme.PurpleIcon
@@ -109,7 +109,7 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                 }, actions = {
                     Box(modifier = Modifier
                         .clickable {
-                            destinationsNavigator.navigate(CardScreenDestination())
+                            destinationsNavigator.navigate(CartScreenDestination())
                         }
                     ) {
                         val cartItemsCount = CartState.cartItems.size
@@ -276,11 +276,11 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                             Button(
                                 onClick = {
                                     val cartItem = CartItem(
-                                        product.id,
-                                        product.title,
-                                        product.image,
-                                        product.price,
-                                        1
+                                        id = product.id,
+                                        name = product.title,
+                                        image = product.image,
+                                        price = product.price,
+                                        quantity = 1
                                     )
                                     CartState.addProduct(cartItem)
                                 },
