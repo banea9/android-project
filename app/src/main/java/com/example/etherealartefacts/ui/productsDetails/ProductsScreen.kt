@@ -114,26 +114,23 @@ fun ProductsScreen(productId: Int, destinationsNavigator: DestinationsNavigator)
                     ) {
                         val cartItemsCount = CartState.cartItems.size
                         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
-                        if(cartItemsCount != 0) {
+                        if (cartItemsCount != 0) {
                             Box(
-                                modifier = Modifier.offset(
-                                    dimensionResource(id = R.dimen.top_app_bar_hor_padding),
-                                    -dimensionResource(id = R.dimen.text_border_radius)
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(dimensionResource(id = R.dimen.text_box_padding))
-                                        .background(color = PurpleIcon, CircleShape)
-                                        .align(Alignment.TopEnd)
-                                ) {
-                                    Text(
-                                        text = cartItemsCount.toString(),
-                                        color = White,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier
+                                    .offset(
+                                        dimensionResource(id = R.dimen.padding_extra_small),
+                                        -dimensionResource(id = R.dimen.text_border_radius)
                                     )
-                                }
+                                    .size(dimensionResource(id = R.dimen.padding_medium))
+                                    .background(color = PurpleIcon, CircleShape)
+                                    .align(Alignment.TopEnd)
+                            ) {
+                                Text(
+                                    text = cartItemsCount.toString(),
+                                    color = White,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
                             }
                         }
                     }

@@ -155,26 +155,23 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                                 .height(dimensionResource(id = R.dimen.home_cart_icon))
                                 .width(dimensionResource(id = R.dimen.home_cart_icon))
                         )
-                        if(cartItemsCount != 0) {
+                        if (cartItemsCount != 0) {
                             Box(
-                                modifier = Modifier.offset(
-                                    dimensionResource(id = R.dimen.top_app_bar_hor_padding),
-                                    -dimensionResource(id = R.dimen.text_border_radius)
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(dimensionResource(id = R.dimen.text_box_padding))
-                                        .background(color = PurpleIcon, CircleShape)
-                                        .align(Alignment.TopEnd)
-                                ) {
-                                    Text(
-                                        text = cartItemsCount.toString(),
-                                        color = White,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier
+                                    .offset(
+                                        dimensionResource(id = R.dimen.padding_extra_small),
+                                        -dimensionResource(id = R.dimen.text_border_radius)
                                     )
-                                }
+                                    .size(dimensionResource(id = R.dimen.padding_medium))
+                                    .background(color = PurpleIcon, CircleShape)
+                                    .align(Alignment.TopEnd)
+                            ) {
+                                Text(
+                                    text = cartItemsCount.toString(),
+                                    color = White,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
                             }
                         }
                     }
@@ -228,26 +225,21 @@ fun HomeScreen(destinationsNavigator: DestinationsNavigator) {
                             }
                     )
                 }
-
                 Box(
-                    modifier = Modifier.offset(
-                        dimensionResource(id = R.dimen.filter_icon_offset_x),
-                        dimensionResource(id = R.dimen.filter_icon_offset_y)
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.text_box_padding))
-                            .background(PurpleIcon, shape = CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "$filterCount",
-                            color = White,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_extra_small))
+                    modifier = Modifier
+                        .offset(
+                            dimensionResource(id = R.dimen.filter_icon_offset_x),
+                            dimensionResource(id = R.dimen.filter_icon_offset_y)
                         )
-                    }
+                        .size(dimensionResource(id = R.dimen.padding_medium))
+                        .background(color = PurpleIcon, CircleShape)
+                ) {
+                    Text(
+                        text = "$filterCount",
+                        color = White,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 LazyColumn(
                     modifier = Modifier
